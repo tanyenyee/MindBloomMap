@@ -2,8 +2,9 @@ import { initializeApp } from "firebase/app";
 import { getAuth } from "firebase/auth";
 import { getDatabase } from "firebase/database";
 
+const apiKey = process.env.REACT_APP_API_KEY;
 const firebaseConfig = {
-  apiKey: "AIzaSyB69qkb-CUPudTJP8sTeMMsMgb0CyDkav4",
+  apiKey: apiKey,
   authDomain: "mindbloommap.firebaseapp.com",
   projectId: "mindbloommap",
   storageBucket: "mindbloommap.firebasestorage.app",
