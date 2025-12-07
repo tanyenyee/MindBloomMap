@@ -1,0 +1,72 @@
+/* src/pages/RegisterPage.css */
+*{
+  font-family: 'Comic Sans MS', 'Chalkboard SE', sans-serif;
+}
+
+.register-page-container {
+  position: fixed;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  width: 360px;
+  max-width: 100%;
+  height: 780px;
+  max-height: 100%;
+  border-radius: 20px;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.25);
+
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  align-items: center;
+  padding: 20px;
+  padding-top: 10%;
+  box-sizing: border-box;
+  font-family: sans-serif;
+
+  background-image: url('../../assets/images/registerPage_background.png'); /* put your register image here */
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+}
+
+.register-page-container h2 {
+  margin-top: 30px;
+  margin-bottom: 30px;
+  color: #08477b;
+  text-shadow: 5px 5px 5px #ffffff;
+  font-size: 300%;
+  margin-top: 0px;
+}
+
+.register-page-container input {
+  width: 80%;
+  padding: 10px;
+  margin: 8px 0;
+  border-radius: 10px;
+  border: none;
+  outline: none;
+  font-size: 1rem;
+}
+
+.register-page-container button {
+  width: 85%;
+  padding: 10px;
+  margin-top: 15px;
+  border-radius: 10px;
+  border: none;
+  cursor: pointer;
+  font-size: 1rem;
+  background-color: rgb(242, 250, 169);
+  color: black;
+  transition: transform 0.2s ease, filter 0.2s ease;
+}
+
+.register-page-container button:hover {
+  transform: scale(1.05);
+  filter: brightness(1.1);
+}
+
+.register-page-container button.secondary {
+  background-color: rgba(0,170,85,0.9);
+}
