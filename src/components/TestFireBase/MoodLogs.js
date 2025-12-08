@@ -29,18 +29,25 @@ export default function MoodGarden() {
 
   const handleAddMood = async () => {
     if (!selectedMood) return alert("Please select a mood!");
-    await addMoodLog({
-      userID: user.uid,
-      emotion: selectedMood.label,
-      date: new Date().toISOString().split("T")[0],
-      note,
-    });
+
+    await addMoodLog(
+      user.uid,
+      {
+        emotion: selectedMood.label,
+        date: new Date().toISOString().split("T")[0],
+        note,
+      }
+    );
+
     setSelectedMood(null);
     setNote("");
+
     const data = await getMoodLogsByUser(user.uid);
     setLogs(data || []);
+
     alert("Mood logged successfully!");
   };
+
 
   if (loading) return <div className="loading-screen">Loading...</div>;
 

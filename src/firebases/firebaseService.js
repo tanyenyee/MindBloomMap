@@ -5,7 +5,6 @@ import { db } from "./firebase";
 /* ======================================================
    GENERIC HELPERS
 ====================================================== */
-
 export async function writeData(path, data) {
   return await set(ref(db, path), data);
 }
@@ -24,11 +23,17 @@ export async function deleteData(path) {
 }
 
 /* ======================================================
-   USERS (Users/{uid})
+   USERS (Users/{userID})
 ====================================================== */
-
 export async function addUser(userID, data) {
-  return await set(ref(db, `Users/${userID}`), data);
+  const userData = {
+    userID,
+    username: data.username || "",
+    password: data.password || "",
+    email: data.email || "",
+    avatar: data.avatar || "",
+  };
+  return await set(ref(db, `Users/${userID}`), userData);
 }
 
 export async function getUser(userID) {
@@ -36,18 +41,13 @@ export async function getUser(userID) {
 }
 
 /* ======================================================
-   MOOD LOGS  (MoodLogs/{uid}/{moodID})
+   MOOD LOGS (MoodLogs/{userID}/{moodID})
 ====================================================== */
+export async function addMoodLog(userID, { emotion, date, note }) {
+  const newRef = push(ref(db, `MoodLogs/${userID}`));
 
-// Add a new mood log
-export async function addMoodLog({ userID, emotion, date, note }) {
-  if (!userID) throw new Error("User ID is required");
-
-  const newRef = push(ref(db, "MoodLogs"));
-  
   const logData = {
     moodID: newRef.key,
-    userID,
     emotion,
     date,
     note: note || "",
@@ -57,30 +57,29 @@ export async function addMoodLog({ userID, emotion, date, note }) {
   return newRef.key;
 }
 
-// Get mood logs by user
 export async function getMoodLogsByUser(userID) {
-  const snapshot = await get(ref(db, "MoodLogs"));
-  const data = snapshot.val() || {};
-  return Object.values(data).filter((log) => log.userID === userID);
+  const all = await fetchData(`MoodLogs/${userID}`);
+  return all ? Object.values(all) : [];
 }
 
-// Delete a mood log by moodID
-export async function deleteMoodLog(moodID) {
-  if (!moodID) throw new Error("Mood ID is required");
-  await remove(ref(db, `MoodLogs/${moodID}`));
+export async function deleteMoodLog(userID, moodID) {
+  return await deleteData(`MoodLogs/${userID}/${moodID}`);
 }
 
 /* ======================================================
-   JOURNALS (Journals/{uid}/{journalID})
+   JOURNALS (Journals/{userID}/{journalID})
 ====================================================== */
-
-export async function addJournal(userID, data) {
+export async function addJournal(userID, { content, emotionTag, date }) {
   const newRef = push(ref(db, `Journals/${userID}`));
-  await set(newRef, {
+
+  const journalData = {
     journalID: newRef.key,
-    userID,
-    ...data
-  });
+    content,
+    emotionTag,
+    date,
+  };
+
+  await set(newRef, journalData);
   return newRef.key;
 }
 
@@ -93,40 +92,48 @@ export async function deleteJournal(userID, journalID) {
   return await deleteData(`Journals/${userID}/${journalID}`);
 }
 
-/* ======================================================
-   GARDEN PROGRESS (Garden/{uid}/{plantID})
-====================================================== */
+export async function updateJournal(userID, journalID, data) {
+  return await update(ref(db, `Journals/${userID}/${journalID}`), data);
+}
 
-export async function addGardenProgress(userID, data) {
-  const newRef = push(ref(db, `Garden/${userID}`));
-  await set(newRef, {
+/* ======================================================
+   GARDEN PROGRESS (GardenProgress/{userID}/{plantID})
+====================================================== */
+export async function addGardenProgress(userID, { stage, lastUpdate }) {
+  const newRef = push(ref(db, `GardenProgress/${userID}`));
+
+  const progress = {
     plantID: newRef.key,
-    userID,
-    ...data
-  });
+    stage,
+    lastUpdate,
+  };
+
+  await set(newRef, progress);
   return newRef.key;
 }
 
 export async function getGardenProgressByUser(userID) {
-  const all = await fetchData(`Garden/${userID}`);
+  const all = await fetchData(`GardenProgress/${userID}`);
   return all ? Object.values(all) : [];
 }
 
 export async function deleteGardenProgress(userID, plantID) {
-  return await deleteData(`Garden/${userID}/${plantID}`);
+  return await deleteData(`GardenProgress/${userID}/${plantID}`);
 }
 
 /* ======================================================
-   ACHIEVEMENTS (Achievements/{uid}/{badgeID})
+   ACHIEVEMENTS (Achievements/{userID}/{badgeID})
 ====================================================== */
-
-export async function addAchievement(userID, data) {
+export async function addAchievement(userID, { achievementName, dateEarned }) {
   const newRef = push(ref(db, `Achievements/${userID}`));
-  await set(newRef, {
+
+  const achievement = {
     badgeID: newRef.key,
-    userID,
-    ...data
-  });
+    achievementName,
+    dateEarned,
+  };
+
+  await set(newRef, achievement);
   return newRef.key;
 }
 
@@ -140,24 +147,28 @@ export async function deleteAchievement(userID, badgeID) {
 }
 
 /* ======================================================
-   REPORTS (Reports/{uid}/{reportID})
+   REPORTS (Reports/{userID}/{reportID})
 ====================================================== */
-
-export async function addReport(userID, data) {
+export async function addReport(userID, { type, details, date }) {
   const newRef = push(ref(db, `Reports/${userID}`));
-  await set(newRef, {
+
+  const report = {
     reportID: newRef.key,
-    userID,
-    ...data
-  });
+    type,
+    details,
+    date,
+  };
+
+  await set(newRef, report);
   return newRef.key;
 }
 
 export async function getReportsByUser(userID) {
-  const reports = await fetchData(`Reports/${userID}`);
-  return reports ? Object.values(reports) : [];
+  const all = await fetchData(`Reports/${userID}`);
+  return all ? Object.values(all) : [];
 }
 
 export async function deleteReport(userID, reportID) {
   return await deleteData(`Reports/${userID}/${reportID}`);
 }
+
