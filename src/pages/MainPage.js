@@ -1,10 +1,13 @@
 // src/pages/MainPage.js
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import './MainPage.css'; 
-import '../styles/PageContainer.css';
-// Importing Assets
-import bgImage from '../assets/images/main_background.png'; 
+import './MainPage.css'; // We will create this next
+import { getAuth, signOut } from "firebase/auth";
+import { useAuth } from "../context/AuthContext"; // use global auth context
+import './MainPage.css';
+// Importing Assets (Assumed names based on your description)
+// Ensure these images exist in your src/assets/images folder
+import bgImage from '../assets/images/main_background.png'; // The sea/sky background
 import volcanoImg from '../assets/images/volcano_asset.png';
 import forestImg from '../assets/images/forest_asset.png';
 import sailingImg from '../assets/images/sailing_boat.png';
@@ -16,32 +19,48 @@ import NavigationButtons from '../components/NavigationButtons';
 const MainPage = () => {
   const navigate = useNavigate();
   const [activeItem, setActiveItem] = useState(null);
+  const { user, loading } = useAuth(); // get user from context
 
+  // Logout function
+  const auth = getAuth();
+  const handleLogout = async () => {
+    try {
+      await signOut(auth); // no need to getAuth here; use default auth in context
+      navigate("/login", { replace: true });
+    } catch (error) {
+      alert("Logout failed: " + error.message);
+    }
+  };
+
+  // Navigation handlers with brief active animation
   const handleNavigation = (path, key) => {
     setActiveItem(key);
+    // delay navigation slightly to allow animation to show
     setTimeout(() => {
       navigate(path);
-    }, 180);
+    }, 180); // match CSS transition duration
   };
 
   const handleKeyActivate = (e, path, key) => {
-    if (e.key === 'Enter' || e.key === ' ') {
+    if (e.key === "Enter" || e.key === " ") {
       e.preventDefault();
       handleNavigation(path, key);
     }
   };
 
-  return (
-    <div className="main-page-container page-container">
-      {/* Navigation Buttons at the top or bottom */}
-      <NavigationButtons />
+  // Show loading or nothing until user data is ready
+  if (loading) return <div className="loading-screen">Loading...</div>;
 
-      {/* Background */}
+  return (
+    <div className="main-page-container">
+      {/* 1. Base Layer: Background Image */}
       <img src={bgImage} alt="World Map Background" className="background-layer" />
 
-      {/* Volcano */}
+      {/* 2. Interactive Layer: Navigation Items */}
+      
+      {/* Volcano -> Volcano Interaction */}
       <div 
-        className={"nav-item volcano-position" + (activeItem === 'volcano' ? ' active' : '')} 
+        className={"nav-item volcano-position" + (activeItem === 'volcano' ? ' active' : '')}
         onClick={() => handleNavigation('/volcano', 'volcano')}
         onMouseDown={() => setActiveItem('volcano')}
         onBlur={() => setActiveItem(null)}
@@ -53,9 +72,9 @@ const MainPage = () => {
         <h2 className="nav-label">Volcano</h2>
       </div>
 
-      {/* Forest */}
+      {/* Forest -> SelfCare */}
       <div 
-        className={"nav-item forest-position" + (activeItem === 'forest' ? ' active' : '')} 
+        className={"nav-item forest-position" + (activeItem === 'forest' ? ' active' : '')}
         onClick={() => handleNavigation('/self-care', 'forest')}
         onMouseDown={() => setActiveItem('forest')}
         onBlur={() => setActiveItem(null)}
@@ -67,9 +86,9 @@ const MainPage = () => {
         <h2 className="nav-label">Forest</h2>
       </div>
 
-      {/* Sailing */}
+      {/* Sailing -> Community */}
       <div 
-        className={"nav-item sailing-position" + (activeItem === 'sailing' ? ' active' : '')} 
+        className={"nav-item sailing-position" + (activeItem === 'sailing' ? ' active' : '')}
         onClick={() => handleNavigation('/community', 'sailing')}
         onMouseDown={() => setActiveItem('sailing')}
         onBlur={() => setActiveItem(null)}
@@ -81,9 +100,9 @@ const MainPage = () => {
         <h2 className="nav-label">Sailing</h2>
       </div>
 
-      {/* Garden */}
+      {/* Garden -> MoodGarden */}
       <div 
-        className={"nav-item garden-position" + (activeItem === 'garden' ? ' active' : '')} 
+        className={"nav-item garden-position" + (activeItem === 'garden' ? ' active' : '')}
         onClick={() => handleNavigation('/mood-garden', 'garden')}
         onMouseDown={() => setActiveItem('garden')}
         onBlur={() => setActiveItem(null)}
