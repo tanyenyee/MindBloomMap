@@ -52,7 +52,10 @@ const MainPage = () => {
   if (loading) return <div className="loading-screen">Loading...</div>;
 
   return (
-    <div className="main-page-container">
+    <div className="main-page-container page-container">
+      {/* Ensure navigation buttons are only inside the container */}
+      <NavigationButtons />
+
       {/* 1. Base Layer: Background Image */}
       <img src={bgImage} alt="World Map Background" className="background-layer" />
 

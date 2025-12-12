@@ -20,7 +20,7 @@ const ProfilePage = () => {
     name: "Chia Jing Yuen",
     phone: "012-345 6789",
     email: "chiajy@gmail.com",
-    avatar: "https://via.placeholder.com/150" // Replace with profilePic variable
+    avatar: profilePic
   });
 
   // --- Modal States ---
@@ -69,7 +69,7 @@ const ProfilePage = () => {
       {/* Navigation is now safely INSIDE the container */}
       <NavigationButtons />
       
-      {/* <img src={bgImg} alt="Profile Background" className="profile-bg" /> */}
+      {<img src={bgImg} alt="Profile Background" className="profile-bg" /> }
 
       <div className="page-content">
         <div className="profile-wrapper">
@@ -85,7 +85,7 @@ const ProfilePage = () => {
             <div className="name-display">
               <h2>{user.name}</h2>
               <button className="edit-icon-btn" onClick={openEditModal}>
-                 ✏️
+                 <img src={penIcon} alt="Edit" className="edit-icon" />
               </button>
             </div>
           </div>
@@ -104,14 +104,17 @@ const ProfilePage = () => {
           <hr className="divider" />
 
           <div className="action-button emergency-btn" onClick={() => navigate('/emergency-report')}>
-            <div className="icon-wrapper">🚨</div>
+            <div className="icon-wrapper">
+                <img src={emergencyIcon} alt="Emergency" className="emergency-icon" /></div>
             <div className="text-wrapper"><h3>Emergency & Safety Centre</h3></div>
           </div>
 
           <hr className="divider" />
 
           <div className="action-button logout-btn" onClick={() => navigate('/login')}>
-            <div className="icon-wrapper">↪️</div>
+            <div className="icon-wrapper">
+                <img src={logoutIcon} alt="Logout" className="logout-icon" />
+            </div>
             <div className="text-wrapper"><h3>Logout</h3></div>
           </div>
 
