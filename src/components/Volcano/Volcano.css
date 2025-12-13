@@ -1,0 +1,212 @@
+.volcano-container {
+  width: 360px;
+  height: 100vh;
+  margin: 0 auto;
+  background-image: url('../../assets/images/volcano_BG.png');
+  background-size: cover;
+  background-position: center;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  font-family: 'Comic Sans MS', cursive, sans-serif;
+  position: relative;
+}
+
+.volcano-back-btn {
+  position: absolute;
+  top: 20px;
+  left: 20px;
+  background: transparent;
+  border: none;
+  color: #8B4513;
+  cursor: pointer;
+  font-size: 22px;
+  font-weight: bold;
+  padding: 8px 15px;
+  transition: all 0.2s;
+  font-family: 'Comic Sans MS', cursive, sans-serif;
+  z-index: 10;
+}
+
+.volcano-back-btn:hover {
+  color: #A0522D;
+  transform: scale(1.05);
+}
+
+.volcano-content {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+}
+
+.volcano-instruction {
+  background: transparent;
+  color: #8B4513;
+  padding: 15px 25px;
+  border-radius: 30px;
+  font-size: 18px;
+  font-weight: bold;
+  text-align: center;
+  text-shadow: 1px 1px 2px rgba(255, 255, 255, 0.8);
+  animation: pulse 2s ease-in-out infinite;
+  min-height: 50px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+@keyframes pulse {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.05); }
+}
+
+.volcano-wrapper {
+  position: relative;
+  width: 100%;
+  height: 650px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.volcano-wrapper.shake {
+  animation: shake 0.6s ease-in-out;
+}
+
+@keyframes shake {
+  0%, 100% { transform: translate(0, 0) rotate(0deg); }
+  10%, 30%, 50%, 70%, 90% { transform: translate(-10px, 0) rotate(-2deg); }
+  20%, 40%, 60%, 80% { transform: translate(10px, 0) rotate(2deg); }
+}
+
+.volcano-button {
+  width: 100%;
+  height: 100%;
+  background: none;
+  border: none;
+  cursor: pointer;
+  position: relative;
+  padding: 0;
+  transition: all 0.3s ease;
+}
+
+.volcano-button:hover:not(:disabled) {
+  transform: scale(1.02);
+}
+
+.volcano-button:active:not(:disabled) {
+  transform: scale(0.95);
+}
+
+.volcano-button:disabled {
+  cursor: not-allowed;
+  opacity: 0.7;
+}
+
+.volcano-button img {
+  width: 400px;
+  height: 800px;
+  object-fit: contain;
+  pointer-events: none;
+}
+
+.particle {
+  position: absolute;
+  border-radius: 50%;
+  pointer-events: none;
+  box-shadow: 0 0 10px currentColor;
+  animation: floatAway 2s ease-out forwards;
+}
+
+@keyframes floatAway {
+  0% {
+    opacity: 1;
+    transform: translate(0, 0) scale(1);
+  }
+  100% {
+    opacity: 0;
+    transform: translate(
+      calc(var(--vx) * 100px), 
+      calc(var(--vy) * 100px)
+    ) scale(0);
+  }
+}
+
+.progress-ring {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  border: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  pointer-events: none;
+}
+
+.progress-fill {
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  background: transparent;
+  transition: transform 0.3s ease;
+  transform-origin: center;
+}
+
+.eruption-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: radial-gradient(circle, rgba(255, 107, 53, 0.8), rgba(211, 47, 47, 0.6), transparent);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  animation: eruptionPulse 1s ease-out infinite;
+  pointer-events: none;
+}
+
+@keyframes eruptionPulse {
+  0%, 100% { 
+    opacity: 1;
+    transform: scale(1);
+  }
+  50% { 
+    opacity: 0.7;
+    transform: scale(1.2);
+  }
+}
+
+.eruption-text {
+  color: white;
+  font-size: 28px;
+  font-weight: bold;
+  text-shadow: 
+    0 0 10px rgba(255, 107, 53, 1),
+    0 0 20px rgba(255, 107, 53, 0.8),
+    0 0 30px rgba(255, 107, 53, 0.6),
+    2px 2px 4px rgba(0, 0, 0, 0.8);
+  animation: textGlow 0.5s ease-in-out infinite;
+}
+
+@keyframes textGlow {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.1); }
+}
+
+
+
+/* Mobile responsiveness */
+@media (max-width: 360px) {
+  .volcano-container {
+    width: 100%;
+  }
+  
+  .volcano-wrapper {
+    height: 550px;
+  }
+}
