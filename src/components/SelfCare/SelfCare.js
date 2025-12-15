@@ -194,13 +194,13 @@ const styles = {
   },
   capybaraImg: {
     position: 'absolute',
-    left: '4%',
+    left: '5%',
     top: '50%',
     width: 221,
     height: 221,
     objectFit: 'contain',
     cursor: 'pointer',
-    zIndex: 80,
+    zIndex: 110,
   },
   relaxationImg: {
     position: 'absolute',
@@ -214,8 +214,8 @@ const styles = {
   },
   musicImg: {
     position: 'absolute',
-    left: '-6%',
-    bottom: '3%',
+    left: '15%',
+    bottom: '-2%',
     width: 252,
     height: 252,
     objectFit: 'contain',
