@@ -10,17 +10,21 @@ export default function SplashPage() {
   const navigate = useNavigate();
 
   useEffect(() => {
+    // Set a timer for 5 seconds
     const timer = setTimeout(() => {
       // Check if user is logged in
-      onAuthStateChanged(auth, (user) => {
+      const unsubscribe = onAuthStateChanged(auth, (user) => {
         if (user) {
-          navigate("/main"); // User already logged in
+          navigate("/main", { replace: true });
         } else {
-          navigate("/login"); // Not logged in
+          navigate("/login", { replace: true });
         }
+        // Clean up the listener after checking
+        unsubscribe();
       });
     }, 5000);
 
+    // Cleanup timer on unmount
     return () => clearTimeout(timer);
   }, [navigate]);
 

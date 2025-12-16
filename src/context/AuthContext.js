@@ -1,34 +1,52 @@
-// src/context/AuthContext.js
-import React, { createContext, useContext, useState, useEffect } from "react";
-import { onAuthStateChanged } from "firebase/auth";
-import { auth } from "../firebases/firebase";
-import { getUser } from "../firebases/firebaseService";
+// src/context/AuthContext.js - 临时安全版本
 
+import React, { createContext, useContext, useState } from 'react';
+
+// 1. 创建 Context
 const AuthContext = createContext();
 
-export function AuthProvider({ children }) {
+// 2. 导出 AuthProvider 组件
+// 这个组件现在不执行任何 Firebase 认证操作
+export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(false);
 
-  useEffect(() => {
-    const unsubscribe = onAuthStateChanged(auth, async (firebaseUser) => {
-      if (firebaseUser) {
-        const dbUser = await getUser(firebaseUser.uid);
-        setUser({ uid: firebaseUser.uid, email: firebaseUser.email, username: dbUser?.username || "" });
-      } else {
-        setUser(null);
-      }
-      setLoading(false);
-    });
+  // 临时模拟登录和注册函数
+  const signIn = (email, password) => {
+    console.log("认证已被临时跳过：尝试登录");
+    return Promise.resolve(true);
+  };
+  const signUp = (email, password) => {
+    console.log("认证已被临时跳过：尝试注册");
+    return Promise.resolve(true);
+  };
+  const logOut = () => {
+    console.log("认证已被临时跳过：尝试退出");
+    setUser(null);
+    return Promise.resolve(true);
+  };
 
-    return () => unsubscribe();
-  }, []);
+  const value = {
+    user,
+    setUser,
+    signIn,
+    signUp,
+    logOut,
+    loading,
+  };
 
   return (
-    <AuthContext.Provider value={{ user, loading }}>
+    <AuthContext.Provider value={value}>
       {children}
     </AuthContext.Provider>
   );
 }
 
-export const useAuth = () => useContext(AuthContext);
+// useAuth Hook
+export const useAuth = () => {
+  const context = useContext(AuthContext);
+  if (!context) {
+    throw new Error('useAuth 必须在 AuthProvider 内部使用');
+  }
+  return context;
+};

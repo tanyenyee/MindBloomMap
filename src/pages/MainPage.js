@@ -1,21 +1,23 @@
 // src/pages/MainPage.js
-import React, { useState } from "react";
-import { useNavigate } from "react-router-dom";
-import { getAuth, signOut } from "firebase/auth";
-import { useAuth } from "../context/AuthContext"; // use global auth context
+import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import './MainPage.css';
-
-// Assets
-import bgImage from '../assets/images/main_background.png';
+import { getAuth, signOut } from "firebase/auth";
+import './MainPage.css';
+// Importing Assets (Assumed names based on your description)
+// Ensure these images exist in your src/assets/images folder
+import bgImage from '../assets/images/main_background.png'; // The sea/sky background
 import volcanoImg from '../assets/images/volcano_asset.png';
 import forestImg from '../assets/images/forest_asset.png';
 import sailingImg from '../assets/images/sailing_boat.png';
 import gardenImg from '../assets/images/garden_flowers.png';
 
+// Import Navigation Buttons
+import NavigationButtons from '../components/NavigationButtons';
+
 const MainPage = () => {
   const navigate = useNavigate();
   const [activeItem, setActiveItem] = useState(null);
-  const { user, loading } = useAuth(); // get user from context
 
   // Logout function
   const auth = getAuth();
@@ -28,10 +30,13 @@ const MainPage = () => {
     }
   };
 
-  // Navigation handlers with animation
+  // Navigation handlers with brief active animation
   const handleNavigation = (path, key) => {
     setActiveItem(key);
-    setTimeout(() => navigate(path), 180);
+    // delay navigation slightly to allow animation to show
+    setTimeout(() => {
+      navigate(path);
+    }, 180); // match CSS transition duration
   };
 
   const handleKeyActivate = (e, path, key) => {
@@ -41,20 +46,17 @@ const MainPage = () => {
     }
   };
 
-  // Show loading or nothing until user data is ready
-  if (loading) return <div className="loading-screen">Loading...</div>;
-
   return (
-    <div className="main-page-container">
+    <div className="main-page-container page-container">
+      {/* Ensure navigation buttons are only inside the container */}
+      <NavigationButtons />
+
+      {/* 1. Base Layer: Background Image */}
       <img src={bgImage} alt="World Map Background" className="background-layer" />
 
-      {/* Header */}
-      <div className="main-header">
-        <h2 id="welcome_message">Welcome, {user?.username || "Guest"}!</h2>
-        <button className="logout-button" onClick={handleLogout}>Logout</button>
-      </div>
-
-      {/* Navigation items */}
+      {/* 2. Interactive Layer: Navigation Items */}
+      
+      {/* Volcano -> Volcano Interaction */}
       <div 
         className={"nav-item volcano-position" + (activeItem === 'volcano' ? ' active' : '')}
         onClick={() => handleNavigation('/volcano', 'volcano')}
@@ -68,6 +70,7 @@ const MainPage = () => {
         <h2 className="nav-label">Volcano</h2>
       </div>
 
+      {/* Forest -> SelfCare */}
       <div 
         className={"nav-item forest-position" + (activeItem === 'forest' ? ' active' : '')}
         onClick={() => handleNavigation('/self-care', 'forest')}
@@ -81,6 +84,7 @@ const MainPage = () => {
         <h2 className="nav-label">Forest</h2>
       </div>
 
+      {/* Sailing -> Community */}
       <div 
         className={"nav-item sailing-position" + (activeItem === 'sailing' ? ' active' : '')}
         onClick={() => handleNavigation('/community', 'sailing')}
@@ -94,6 +98,7 @@ const MainPage = () => {
         <h2 className="nav-label">Sailing</h2>
       </div>
 
+      {/* Garden -> MoodGarden */}
       <div 
         className={"nav-item garden-position" + (activeItem === 'garden' ? ' active' : '')}
         onClick={() => handleNavigation('/mood-garden', 'garden')}

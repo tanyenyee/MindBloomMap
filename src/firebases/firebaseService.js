@@ -172,3 +172,29 @@ export async function deleteReport(userID, reportID) {
   return await deleteData(`Reports/${userID}/${reportID}`);
 }
 
+/* ======================================================
+   CHAT MESSAGES (ChatMessages/{userID}/{messageID})
+====================================================== */
+export async function addChatMessage(userID, { message, sender, timestamp }) {
+  const newRef = push(ref(db, `ChatMessages/${userID}`));
+
+  const chatMessage = {
+    messageID: newRef.key,
+    message,
+    sender, // "user" or "ai"
+    timestamp,
+  };
+
+  await set(newRef, chatMessage);
+  return newRef.key;
+}
+
+export async function getChatHistory(userID) {
+  const all = await fetchData(`ChatMessages/${userID}`);
+  if (!all) return [];
+  
+  // Convert object to array and sort by timestamp
+  const messagesArray = Object.values(all);
+  return messagesArray.sort((a, b) => a.timestamp - b.timestamp);
+}
+

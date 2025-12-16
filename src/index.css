@@ -1,94 +1,23 @@
-<<<<<<< HEAD
-=======
-<<<<<<< HEAD
->>>>>>> 8023c9e594b9057239cb2de7113d5ff2e0b7b4fc
-:root {
-  font-family: system-ui, Avenir, Helvetica, Arial, sans-serif;
-  line-height: 1.5;
-  font-weight: 400;
-
-  color-scheme: light dark;
-  color: rgba(255, 255, 255, 0.87);
-  background-color: #242424;
-
-  font-synthesis: none;
-  text-rendering: optimizeLegibility;
-<<<<<<< HEAD
-=======
-=======
 body {
   margin: 0;
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
     'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
     sans-serif;
->>>>>>> 3959c23a1a4a38192c413bc97c3023d1bae8071a
->>>>>>> 8023c9e594b9057239cb2de7113d5ff2e0b7b4fc
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+   width: 100%;
+    height: 100%; /* 确保高度占满 */
+    /* 防止水平滚动条导致左侧偏移 */
+    overflow-x: hidden; 
 }
 
-<<<<<<< HEAD
-=======
-<<<<<<< HEAD
->>>>>>> 8023c9e594b9057239cb2de7113d5ff2e0b7b4fc
-a {
-  font-weight: 500;
-  color: #646cff;
-  text-decoration: inherit;
-}
-a:hover {
-  color: #535bf2;
-}
-
-body {
-  margin: 0;
-  display: flex;
-  place-items: center;
-  min-width: 320px;
-  min-height: 100vh;
-}
-
-h1 {
-  font-size: 3.2em;
-  line-height: 1.1;
-}
-
-button {
-  border-radius: 8px;
-  border: 1px solid transparent;
-  padding: 0.6em 1.2em;
-  font-size: 1em;
-  font-weight: 500;
-  font-family: inherit;
-  background-color: #1a1a1a;
-  cursor: pointer;
-  transition: border-color 0.25s;
-}
-button:hover {
-  border-color: #646cff;
-}
-button:focus,
-button:focus-visible {
-  outline: 4px auto -webkit-focus-ring-color;
-}
-
-@media (prefers-color-scheme: light) {
-  :root {
-    color: #213547;
-    background-color: #ffffff;
-  }
-  a:hover {
-    color: #747bff;
-  }
-  button {
-    background-color: #f9f9f9;
-  }
-<<<<<<< HEAD
-=======
-=======
 code {
   font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
     monospace;
->>>>>>> 3959c23a1a4a38192c413bc97c3023d1bae8071a
->>>>>>> 8023c9e594b9057239cb2de7113d5ff2e0b7b4fc
+}
+#root, #root > div {
+    margin: 0 !important;
+    padding: 0 !important;
+    width: 100%;
+    /* 确保外部包裹 EmergencyReport 的 div 也没有 padding */
 }

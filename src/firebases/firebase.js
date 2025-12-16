@@ -2,9 +2,18 @@ import { initializeApp } from "firebase/app";
 import { getAuth } from "firebase/auth";
 import { getDatabase } from "firebase/database";
 
-const apiKey = process.env.REACT_APP_API_KEY;
+// Use process.env for Create React App (CRA) instead of import.meta.env
+const apiKey = process.env.REACT_APP_FIREBASE_API_KEY;
+
+// Validate that API key exists
+if (!apiKey) {
+  console.error(
+    "❌ Firebase API Key is missing! Check your .env file and ensure REACT_APP_FIREBASE_API_KEY is set."
+  );
+}
+
 const firebaseConfig = {
-  apiKey: apiKey,
+  apiKey: apiKey || "MISSING_API_KEY", // Fallback to prevent crashes
   authDomain: "mindbloommap.firebaseapp.com",
   projectId: "mindbloommap",
   storageBucket: "mindbloommap.firebasestorage.app",
