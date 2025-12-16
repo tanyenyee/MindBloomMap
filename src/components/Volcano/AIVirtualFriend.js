@@ -1,6 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { IoArrowBack } from 'react-icons/io5';
 import { useAuth } from '../../context/AuthContext';
 import { useToast } from '../../context/ToastContext';
 import { sendMessage, loadConversationHistory, initializeConversation } from '../../services/geminiService';
@@ -161,6 +160,7 @@ const AIVirtualFriend = () => {
       community: '/community',
     };
 
+    let result = text;
     const parts = [];
     let lastIndex = 0;
 
@@ -237,7 +237,7 @@ const AIVirtualFriend = () => {
         {/* Header */}
         <div className="chat-header">
           <button className="back-button" onClick={() => navigate('/main')}>
-            <IoArrowBack size={24} />
+            ←
           </button>
           <h2>Chat with Friend</h2>
           <button className="clear-button" onClick={handleClearChat} title="Clear chat history">

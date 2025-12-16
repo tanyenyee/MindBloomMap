@@ -118,6 +118,7 @@ const Volcano = () => {
     setShowBackButton(false);
     setClickCount(0);
     setParticles([]);
+    // Remove any navigation calls here to prevent infinite loops
   };
 
   return (

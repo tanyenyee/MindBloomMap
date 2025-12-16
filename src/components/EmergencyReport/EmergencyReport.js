@@ -1,10 +1,30 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import backgroundImage from '../../assets/images/EmergencyBackground.png'; 
 import { IoArrowBack } from 'react-icons/io5';
 
 const EmergencyReport = () => {
   const navigate = useNavigate();
+  const toastTimerRef = useRef(null);
+
+  // 1. State for managing the form inputs
+  const [incidentType, setIncidentType] = useState('General');
+  const [description, setDescription] = useState('');
+  const [isAnonymous, setIsAnonymous] = useState(false);
+  const [toastMessage, setToastMessage] = useState(null); 
+  const [typeOfIncidentText, setTypeOfIncidentText] = useState('');
+  const [hotlines, setHotlines] = useState([
+      { name: 'Mom', number: '0121231234' },{ name: 'Talian Kasih', number: '15999' }]); 
+  const [isAddMoreModalOpen, setIsAddMoreModalOpen] = useState(false);
+
+  // Clean up timer on unmount
+  useEffect(() => {
+    return () => {
+      if (toastTimerRef.current) {
+        clearTimeout(toastTimerRef.current);
+      }
+    };
+  }, []);
 
  useEffect(() => {
         // 清除浏览器默认的 body margin/padding
@@ -12,7 +32,6 @@ const EmergencyReport = () => {
     document.body.style.padding = '0!important';
     document.documentElement.style.margin = '0 !important';
     document.documentElement.style.padding = '0 !important';
-        // 确保 body 能够适应 rootContainer
     document.body.style.width = '100vw';
     document.body.style.overflowX = 'hidden';
     document.body.style.minHeight = '100vh'; 
@@ -26,20 +45,23 @@ const EmergencyReport = () => {
     };
   }, []); // 空数组确保只在挂载和卸载时运行
 
-  // 1. State for managing the form inputs
-  const [incidentType, setIncidentType] = useState('General');
-  const [description, setDescription] = useState('');
-  const [isAnonymous, setIsAnonymous] = useState(false);
-// 🚀 新增：Toast 提示状态
-// toastMessage: 显示的消息内容 (或 null/empty string 表示不显示)
-  const [toastMessage, setToastMessage] = useState(null); 
-  // 🚀 计时器引用，用于清除 setTimeout
-  const [toastTimer, setToastTimer] = useState(null);
-  const [typeOfIncidentText, setTypeOfIncidentText] = useState('');
-  // 🚀 关键修改：Hotlines 初始状态包含 Befrienders KL 和 Talian Kasih
-  const [hotlines, setHotlines] = useState([
-      { name: 'Mom', number: '0121231234' },{ name: 'Talian Kasih', number: '15999' }]); 
-  const [isAddMoreModalOpen, setIsAddMoreModalOpen] = useState(false);
+  // Helper function to show toast
+  const showToast = (message) => {
+    // Clear any existing timer
+    if (toastTimerRef.current) {
+      clearTimeout(toastTimerRef.current);
+    }
+    
+    // Show message
+    setToastMessage(message);
+
+    // Set new timer
+    toastTimerRef.current = setTimeout(() => {
+      setToastMessage(null);
+      toastTimerRef.current = null;
+    }, 3000);
+  };
+
   // 2. Submit Handler
   const handleSubmit = () => {
     // Basic validation
@@ -55,25 +77,7 @@ const EmergencyReport = () => {
         isAnonymous: isAnonymous
     });
 
-// 🚀 新增：Toast 逻辑，与 handleToggleAnonymous 相似
-    const message = "Quick Report Submitted Successfully!";
-    
-    // 清除任何现有的计时器，避免重复
-    if (toastTimer) {
-        clearTimeout(toastTimer);
-        setToastTimer(null);
-    }
-    
-    // 显示 Toast 消息
-    setToastMessage(message);
-
-    // 设置计时器，3秒后隐藏 Toast 
-    const timer = setTimeout(() => {
-        setToastMessage(null); // 隐藏 Toast
-        setToastTimer(null);
-    }, 3000); 
-    
-    setToastTimer(timer);
+    showToast("Quick Report Submitted Successfully!");
     
     // Reset form after submission
     setDescription('');
@@ -97,21 +101,18 @@ const EmergencyReport = () => {
     const message = newState ? "Anonymous Mode On" : "Anonymous Mode Off";
         
     // 3. 清除任何现有的计时器，避免重复
-    if (toastTimer) {
-        clearTimeout(toastTimer);
-        setToastTimer(null);
+    if (toastTimerRef.current) {
+      clearTimeout(toastTimerRef.current);
     }
 
     // 4. 显示 Toast 消息
     setToastMessage(message);
 
     // 5. 设置计时器，3秒后隐藏 Toast 
-    const timer = setTimeout(() => {
+    toastTimerRef.current = setTimeout(() => {
         setToastMessage(null); // 隐藏 Toast
-        setToastTimer(null);
+        toastTimerRef.current = null;
     }, 3000); 
-        
-    setToastTimer(timer);
     };
 
   // 3. Styles for matching the UI draft look and feel (using inline styles for React Web)
