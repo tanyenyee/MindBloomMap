@@ -9,7 +9,7 @@ import "./LoginPage.css";
 export default function LoginPage() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const { user, setUser } = useAuth(); 
+  const { user } = useAuth(); 
   const navigate = useNavigate();
 
   // Redirect if already logged in

@@ -1,8 +1,11 @@
 import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import backgroundImage from '../../assets/images/EmergencyBackground.png'; 
 import { IoArrowBack } from 'react-icons/io5';
 
 const EmergencyReport = () => {
+  const navigate = useNavigate();
+
  useEffect(() => {
         // 清除浏览器默认的 body margin/padding
     document.body.style.margin = '0!important';
@@ -415,6 +418,7 @@ const EmergencyReport = () => {
             <div style={styles.headerRow}></div>
             <IoArrowBack 
                 style={styles.iconStyle}  
+                onClick={() => navigate(-1)}
             />
 
             {/* Header */}

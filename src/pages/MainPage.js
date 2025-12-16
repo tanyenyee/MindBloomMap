@@ -1,9 +1,8 @@
 // src/pages/MainPage.js
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import './MainPage.css'; // We will create this next
+import './MainPage.css';
 import { getAuth, signOut } from "firebase/auth";
-import { useAuth } from "../context/AuthContext"; // use global auth context
 import './MainPage.css';
 // Importing Assets (Assumed names based on your description)
 // Ensure these images exist in your src/assets/images folder
@@ -19,7 +18,6 @@ import NavigationButtons from '../components/NavigationButtons';
 const MainPage = () => {
   const navigate = useNavigate();
   const [activeItem, setActiveItem] = useState(null);
-  const { user, loading } = useAuth(); // get user from context
 
   // Logout function
   const auth = getAuth();
@@ -47,9 +45,6 @@ const MainPage = () => {
       handleNavigation(path, key);
     }
   };
-
-  // Show loading or nothing until user data is ready
-  if (loading) return <div className="loading-screen">Loading...</div>;
 
   return (
     <div className="main-page-container page-container">

@@ -10,7 +10,6 @@ const AuthContext = createContext();
 export const AuthProvider = ({ children }) => {
     // 临时设置一个模拟的用户对象，防止依赖它的组件崩溃
     const [currentUser, setCurrentUser] = useState({ uid: 'guest-id', email: 'guest@test.com' });
-    const [loading, setLoading] = useState(false); // 保持为 false，表示加载完成
 
     // 临时模拟登录和注册函数
     const signIn = (email, password) => {
@@ -32,7 +31,8 @@ export const AuthProvider = ({ children }) => {
         signIn,
         signUp,
         logOut,
-        // ... 其他您可能导出的认证相关函数也在这里添加模拟函数
+        loading: false,
+        user: currentUser,
     };
 
     return (
