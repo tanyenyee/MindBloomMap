@@ -111,30 +111,6 @@ const MainPage = () => {
         <img src={gardenImg} alt="Flower Garden" className="nav-image" />
         <h2 className="nav-label">Garden</h2>
       </div>
-
-      {/* ===== AI FRIEND BUTTON ===== */}
-      <button
-        onClick={() => navigate('/ai-friend')}
-        style={{
-          position: 'absolute',
-          bottom: '20px',
-          right: '20px',
-          padding: '12px 24px',
-          backgroundColor: '#08477b',
-          color: 'white',
-          border: 'none',
-          borderRadius: '25px',
-          fontSize: '14px',
-          fontWeight: 'bold',
-          cursor: 'pointer',
-          boxShadow: '0 4px 8px rgba(0,0,0,0.2)',
-          fontFamily: 'inherit',
-          zIndex: 10,
-        }}
-      >
-        AI Friend
-      </button>
-      {/* ===== END AI FRIEND BUTTON ===== */}
     </div>
   );
 };
