@@ -9,13 +9,13 @@ import "./LoginPage.css";
 export default function LoginPage() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const { user } = useAuth(); 
+  const { user, setUser } = useAuth(); 
   const navigate = useNavigate();
 
   // Redirect if already logged in
   useEffect(() => {
     if (user) {
-      navigate("/main");
+      navigate("/main", { replace: true });
     }
   }, [user, navigate]);
 
@@ -29,15 +29,18 @@ export default function LoginPage() {
       // Fetch additional user info (like username) from Realtime Database
       const dbUser = await getUser(firebaseUser.uid);
 
-      // Only pass serializable plain object
+      // Create user object with serializable data
       const userData = {
         uid: firebaseUser.uid,
         email: firebaseUser.email,
         username: dbUser?.username || "",
       };
 
+      // ✅ KEY FIX: Set user in AuthContext
+      setUser(userData);
+
       alert("Login successful!");
-      navigate("/main", { state: { user: userData } });
+      // Navigate will happen automatically via useEffect when user state updates
     } catch (error) {
       alert(error.message);
     }

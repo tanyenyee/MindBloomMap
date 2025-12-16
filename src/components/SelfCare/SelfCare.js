@@ -1,14 +1,11 @@
-import React from 'react';
-import NavigationButtons from '../NavigationButtons';
-import '../../styles/PageContainer.css';
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+import NavigationButtons from '../NavigationButtons';
+import '../../styles/PageContainer.css';
 import forestBg from '../../assets/images/forest_background.png';
-import forestIcon from '../../assets/images/forest_asset.png';
 import capybaraImg from '../../assets/images/capybara.png';
 import stonesImg from '../../assets/images/relaxation_stones.png';
 import birdImg from '../../assets/images/bird_music.png';
-import mainBg from '../../assets/images/main_background.png';
 
 const VIEWS = {
   FOREST: 'forest',
@@ -46,23 +43,13 @@ const SelfCare = () => {
   const seconds = String(secondsLeft % 60).padStart(2, '0');
 
   const renderForest = () => (
-    <div style={{ ...styles.overlay, position: 'relative' }}>
-      <img
-        src={forestIcon}
-        alt="Back to map"
-        style={styles.topRightIcon}
-        onClick={() => navigate('/main')}
-        role="button"
-        tabIndex={0}
-        aria-label="Back to map"
-      />
-
+    <div style={styles.forestView}>
       {/* Capybara / AI Friend clickable image */}
       <img
         src={capybaraImg}
         alt="AI Friend"
         style={styles.capybaraImg}
-        onClick={(e) => { e.stopPropagation(); alert('AI Friend coming soon!'); }}
+        onClick={() => navigate('/ai-friend')}
         role="button"
       />
 
@@ -80,19 +67,9 @@ const SelfCare = () => {
         src={birdImg}
         alt="Music"
         style={styles.musicImg}
-        onClick={() => navigate('/music', { state: { autoplay: true } })}
+        onClick={() => navigate('/music')}
         role="button"
       />
-
-      {/* In-forest music player panel (appears near bird) */}
-      
-
-      {/* small labels for accessibility / visual */}
-      <div style={styles.labelsContainer}>
-        <div style={styles.label}>AI Friend</div>
-        <div style={styles.label}>Relaxation</div>
-        <div style={styles.label}>Music</div>
-      </div>
     </div>
   );
 
@@ -123,46 +100,62 @@ const SelfCare = () => {
     </div>
   );
 
-  
-
-  const background = view === VIEWS.FOREST ? forestBg : mainBg;
-
   return (
-    <div className="main-page-container">
+    <div className="main-page-container" style={styles.mainContainer}>
       <NavigationButtons />
-    {/* Content area positioned over the background */}
-      <div style={{ position: 'absolute', inset: 0 }}>
+      
+      {/* Fixed background */}
+      <img 
+        src={forestBg} 
+        alt="Forest Background" 
+        style={styles.backgroundImage}
+      />
+
+      {/* Content area - overlays the background */}
+      <div style={styles.contentArea}>
         {view === VIEWS.FOREST && renderForest()}
         {view === VIEWS.RELAXATION && renderRelaxation()}
         {view === VIEWS.MUSIC && renderMusic()}
       </div>
-      </div>
+    </div>
   );
 };
 
 const styles = {
-  container: {
-    minHeight: '80vh',
-    backgroundSize: 'cover',
-    backgroundPosition: 'center',
-    padding: 24,
+  mainContainer: {
+    position: 'relative',
+    overflow: 'hidden',
+  },
+  backgroundImage: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    width: '100%',
+    height: '100%',
+    objectFit: 'cover',
+    zIndex: 0,
+  },
+  contentArea: {
+    position: 'relative',
+    zIndex: 10,
+    width: '100%',
+    height: '100%',
     display: 'flex',
     alignItems: 'center',
     justifyContent: 'center',
   },
-  overlay: {
-    background: 'transparent',
-    padding: 0,
-    borderRadius: 0,
-    textAlign: 'center',
-    minWidth: 0,
+  forestView: {
+    position: 'relative',
     width: '100%',
     height: '100%',
   },
-  buttonsRow: { display: 'flex', gap: 12, justifyContent: 'center', marginTop: 16 },
-  timer: { fontSize: 48, fontWeight: '700', marginTop: 12 },
+  timer: { 
+    fontSize: 48, 
+    fontWeight: '700', 
+    marginTop: 12 
+  },
   relaxationContainer: {
-    background: 'transparent',
+    background: 'rgba(255, 255, 255, 0.9)',
     padding: 28,
     borderRadius: 10,
     textAlign: 'center',
@@ -171,9 +164,10 @@ const styles = {
     flexDirection: 'column',
     alignItems: 'center',
     gap: 12,
+    boxShadow: '0 4px 6px rgba(0, 0, 0, 0.1)',
   },
   musicContainer: {
-    background: 'transparent',
+    background: 'rgba(255, 255, 255, 0.9)',
     padding: 28,
     borderRadius: 10,
     textAlign: 'center',
@@ -182,17 +176,25 @@ const styles = {
     flexDirection: 'column',
     alignItems: 'center',
     gap: 12,
+    boxShadow: '0 4px 6px rgba(0, 0, 0, 0.1)',
   },
-  verticalButtons: { display: 'flex', flexDirection: 'column', gap: 10, width: '70%', alignItems: 'center' },
-  bigButton: { padding: '10px 14px', fontSize: 16, width: '100%', borderRadius: 6 },
-  topRightIcon: {
-    position: 'absolute',
-    top: 12,
-    right: 12,
-    width: 72,
-    height: 72,
+  verticalButtons: { 
+    display: 'flex', 
+    flexDirection: 'column', 
+    gap: 10, 
+    width: '70%', 
+    alignItems: 'center' 
+  },
+  bigButton: { 
+    padding: '10px 14px', 
+    fontSize: 16, 
+    width: '100%', 
+    borderRadius: 6,
     cursor: 'pointer',
-    zIndex: 5,
+    border: 'none',
+    backgroundColor: '#08477b',
+    color: 'white',
+    fontWeight: 'bold',
   },
   capybaraImg: {
     position: 'absolute',
@@ -202,7 +204,7 @@ const styles = {
     height: 221,
     objectFit: 'contain',
     cursor: 'pointer',
-    zIndex: 110,
+    zIndex: 20,
   },
   relaxationImg: {
     position: 'absolute',
@@ -212,7 +214,7 @@ const styles = {
     height: 240,
     objectFit: 'contain',
     cursor: 'pointer',
-    zIndex: 4,
+    zIndex: 20,
   },
   musicImg: {
     position: 'absolute',
@@ -222,17 +224,8 @@ const styles = {
     height: 252,
     objectFit: 'contain',
     cursor: 'pointer',
-    zIndex: 50,
+    zIndex: 20,
   },
-  labelsContainer: {
-    display: 'none',
-  },
-  label: {
-    background: 'rgba(255,255,255,0.7)',
-    padding: '6px 10px',
-    borderRadius: 6,
-    fontWeight: 600,
-  }
 };
 
 export default SelfCare;

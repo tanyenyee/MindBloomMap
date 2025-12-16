@@ -7,9 +7,9 @@ const NavigationButtons = () => {
   const [pressed, setPressed] = useState({});
 
   const buttons = [
-    { alt: 'Back', onClick: () => navigate(-1) },
-    { alt: 'Main Page', onClick: () => navigate('/') },
-    { alt: 'Profile Page', onClick: () => navigate('/profile') },
+    { alt: 'Back', onClick: () => navigate('/main', { replace: true}), title: 'Go back to previous page' },
+    { alt: 'Main Page', onClick: () => navigate('/main', { replace: true }), title: 'Return to main page' },
+    { alt: 'Profile Page', onClick: () => navigate('/profile'), title: 'Go to profile page' },
   ];
 
   const containerStyle = {
@@ -50,6 +50,7 @@ const NavigationButtons = () => {
         <button
           key={idx}
           aria-label={btn.alt}
+          title={btn.title}
           style={getButtonStyle(idx)}
           onMouseDown={() => setPressed({ ...pressed, [idx]: true })}
           onMouseUp={() => {

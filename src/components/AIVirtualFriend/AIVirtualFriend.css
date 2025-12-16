@@ -29,6 +29,14 @@
   font-size: 18px;
 }
 
+/* Content Wrapper */
+.content-wrapper {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  overflow: hidden;
+}
+
 /* Header */
 .chat-header {
   display: flex;
@@ -39,6 +47,8 @@
   color: #333;
   box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
   flex-shrink: 0;
+  position: relative;
+  z-index: 100;
 }
 
 .chat-header h2 {
@@ -101,29 +111,39 @@
 .messages-area {
   flex: 1;
   overflow-y: auto;
+  overflow-x: hidden;
   padding: 15px;
   display: flex;
   flex-direction: column;
   gap: 12px;
   min-height: 0;
+  scroll-behavior: smooth;
 }
 
+/* Scrollbar Styling */
 .messages-area::-webkit-scrollbar {
-  width: 6px;
+  width: 8px;
 }
 
 .messages-area::-webkit-scrollbar-track {
-  background: rgba(255, 255, 255, 0.3);
-  border-radius: 3px;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 4px;
+  margin: 10px 0;
 }
 
 .messages-area::-webkit-scrollbar-thumb {
-  background: rgba(107, 76, 143, 0.3);
-  border-radius: 3px;
+  background: rgba(107, 76, 143, 0.5);
+  border-radius: 4px;
 }
 
 .messages-area::-webkit-scrollbar-thumb:hover {
-  background: rgba(107, 76, 143, 0.5);
+  background: rgba(107, 76, 143, 0.7);
+}
+
+/* Firefox Scrollbar */
+.messages-area {
+  scrollbar-color: rgba(107, 76, 143, 0.5) rgba(255, 255, 255, 0.1);
+  scrollbar-width: thin;
 }
 
 /* Message Bubbles */
@@ -225,7 +245,7 @@
   }
 }
 
-/* Input Area */
+/* Input Area - Fixed at bottom */
 .input-area {
   display: flex;
   padding: 12px 15px;
@@ -234,6 +254,8 @@
   gap: 10px;
   box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.05);
   flex-shrink: 0;
+  width: 100%;
+  box-sizing: border-box;
 }
 
 .message-input {

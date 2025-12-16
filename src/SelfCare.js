@@ -20,10 +20,7 @@ const SelfCare = () => {
     // State to track which component is showing (Forest map, Timer, or Music)
     const [currentView, setCurrentView] = useState(VIEWS.FOREST);
 
-    const goToMainMap = () => {
-        // Navigates back to the map path defined in App.js
-        navigate('/main'); 
-    };
+
 
     // Function to render the main Forest area with clickable icons
     const renderForestView = () => (
@@ -31,13 +28,7 @@ const SelfCare = () => {
             source={require('./assets/images/forest_page_background.png')} 
             style={styles.backgroundImage}
         >
-            {/* 🛑 Icon to go back to main map (Top Right) 🛑 */}
-            <TouchableOpacity 
-                style={styles.mapIcon} 
-                onPress={goToMainMap}
-            >
-                 <Text style={styles.iconText}>Map</Text> 
-            </TouchableOpacity>
+            
 
             {/* --- Clickable Area for Relaxation (Stones) --- */}
             <TouchableOpacity 

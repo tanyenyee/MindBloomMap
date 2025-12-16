@@ -112,8 +112,7 @@ const MainPage = () => {
         <h2 className="nav-label">Garden</h2>
       </div>
 
-      {/* ===== TEMPORARY AI FRIEND BUTTON - REMOVE LATER ===== */}
-      {/* Simple button to test AI Friend chat feature */}
+      {/* ===== AI FRIEND BUTTON ===== */}
       <button
         onClick={() => navigate('/ai-friend')}
         style={{
@@ -135,7 +134,7 @@ const MainPage = () => {
       >
         AI Friend
       </button>
-      {/* ===== END TEMPORARY BUTTON ===== */}
+      {/* ===== END AI FRIEND BUTTON ===== */}
     </div>
   );
 };

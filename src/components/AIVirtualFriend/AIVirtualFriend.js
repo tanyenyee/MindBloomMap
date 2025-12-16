@@ -9,7 +9,6 @@ import { ref, remove } from 'firebase/database';
 import { db } from '../../firebases/firebase';
 import trashIcon from '../../assets/images/trash_button.png';
 import Dialog from '../UI/Dialog';
-import NavigationButtons from '../NavigationButtons';
 import './AIVirtualFriend.css';
 
 const AIVirtualFriend = () => {
@@ -231,12 +230,11 @@ const AIVirtualFriend = () => {
 
   return (
     <div className="ai-friend-container">
-      <NavigationButtons />
       
       <div className="content-wrapper">
         {/* Header */}
         <div className="chat-header">
-          <button className="back-button" onClick={() => navigate('/main')}>
+          <button className="back-button" onClick={() => navigate('/self-care')}>
             <IoArrowBack size={24} />
           </button>
           <h2>Chat with Friend</h2>

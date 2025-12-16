@@ -16,6 +16,7 @@ import Community from "./components/Community/Community";
 import SelfCare from "./components/SelfCare/SelfCare";
 import MoodGarden from "./components/MoodGarden/MoodGarden";
 import AIVirtualFriend from "./components/AIVirtualFriend/AIVirtualFriend";
+import EmergencyReport from "./components/EmergencyReport/EmergencyReport";
 import MusicPlayer from "./pages/MusicPlayerPage";
 
 function App() {
@@ -45,6 +46,14 @@ function App() {
               element={
                 <PrivateRoute>
                   <ProfilePage />
+                </PrivateRoute>
+              }
+            />
+            <Route
+              path="/emergency-report"
+              element={
+                <PrivateRoute>
+                  <EmergencyReport />
                 </PrivateRoute>
               }
             />
