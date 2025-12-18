@@ -1,0 +1,964 @@
+/* ==================== MOBILE APP CONTAINER ==================== */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html, body, #root {
+  width: 100%;
+  height:  100%;
+  overflow: hidden;
+  font-family: 'Lato', sans-serif;
+}
+
+/* Mobile app wrapper - MATCHES MAIN PAGE */
+.Community {
+  position: fixed;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  width: 360px;  /* Same as main page */
+  height:  780px; /* Same as main page */
+  max-width: 100%;
+  max-height: 100%;
+  overflow: hidden;
+  background: #fff;
+  border-radius: 20px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.25);
+  z-index: 100;
+}
+
+/* Title fonts */
+h1, h2, h3, h4, h5, h6,
+.post-title,
+.page-title,
+.community-title {
+  font-family: 'Old Standard TT', serif;
+  font-weight: 700;
+}
+
+
+
+/* ==================== FONT SETUP ==================== */
+* {
+  margin: 0;
+  padding:  0;
+  box-sizing: border-box;
+}
+
+body,
+.Community,
+.ocean-map,
+.post-preview-modal,
+.post-detail-page,
+.write-post-page,
+.comment-section,
+input,
+textarea,
+button {
+  font-family: 'Lato', sans-serif; /* Regular text */
+  font-weight: 400;
+}
+
+/* Titles use Old Standard TT Bold */
+h1, h2, h3, h4, h5, h6,
+.post-title,
+.page-title,
+.community-title,
+.comments-title {
+  font-family: 'Old Standard TT', serif; /* Titles */
+  font-weight: 700;
+}
+
+/* ==================== REST OF YOUR CSS ==================== */
+
+
+/* ==================== GLOBAL STYLES ==================== */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  overflow-x: hidden;
+}
+
+.App {
+  min-height:  100vh;
+}
+
+/* ==================== OCEAN MAP SCREEN ==================== */
+.ocean-map {
+  background: linear-gradient(to bottom, #A8D8EA 0%, #D4F1F4 100%);
+  min-height: 100vh;
+  padding: 20px;
+  padding-bottom: 100px;
+  position: relative;
+}
+
+.community-title {
+  text-align: center;
+  color: #2C5F77;
+  font-size: 28px;
+  margin-bottom: 30px;
+}
+
+.islands-container {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  gap: 30px;
+  padding: 20px;
+  max-width: 1200px;
+  margin: 0 auto;
+  min-height: 60vh;
+}
+
+/* ==================== ISLAND COMPONENT ==================== */
+.island {
+  cursor: pointer;
+  text-align: center;
+  transition: transform 0.3s ease;
+  animation: float 3s ease-in-out infinite;
+}
+
+.island:hover {
+  transform: translateY(-10px) scale(1.05);
+}
+
+.island-emoji {
+  font-size: 80px;
+  margin-bottom:  10px;
+  filter: drop-shadow(2px 4px 6px rgba(0, 0, 0, 0.2));
+}
+
+.island-preview {
+  background: white;
+  padding: 12px;
+  border-radius:  12px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.island-username {
+  font-size: 12px;
+  color: #666;
+  margin-bottom: 4px;
+}
+
+.island-title {
+  font-size: 14px;
+  font-weight: 600;
+  color: #333;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+@keyframes float {
+  0%, 100% {
+    transform: translateY(0px);
+  }
+  50% {
+    transform: translateY(-15px);
+  }
+}
+
+/* ==================== MAP CONTROLS ==================== */
+.map-controls {
+  position:  fixed;
+  bottom: 80px;
+  left: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  z-index: 100;
+}
+
+.control-btn {
+  padding: 12px 20px;
+  border: none;
+  border-radius: 25px;
+  font-size:  14px;
+  font-weight:  600;
+  cursor: pointer;
+  transition: all 0.3s;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.15);
+  white-space: nowrap;
+}
+
+.write-btn {
+  background: #AAE3E2;
+  color: #2C5F77;
+}
+
+.refresh-btn {
+  background: #B4A7D6;
+  color:  white;
+}
+
+.control-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.2);
+}
+
+/* ==================== MODAL OVERLAY ==================== */
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background:  rgba(0, 0, 0, 0.6);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 2000;
+  backdrop-filter: blur(4px);
+}
+
+/* ==================== POST PREVIEW MODAL ==================== */
+.post-preview-modal {
+  background: white;
+  padding: 30px;
+  border-radius: 20px;
+  max-width: 500px;
+  width: 90%;
+  max-height: 80vh;
+  overflow-y:  auto;
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+  position: relative;
+  animation: slideUp 0.3s ease;
+}
+
+@keyframes slideUp {
+  from {
+    opacity: 0;
+    transform:  translateY(50px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.close-btn {
+  position: absolute;
+  top: 15px;
+  right: 15px;
+  background: #f0f0f0;
+  border: none;
+  width: 30px;
+  height: 30px;
+  border-radius:  50%;
+  font-size: 18px;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.close-btn:hover {
+  background: #e0e0e0;
+}
+
+/* ==================== POST HEADER ==================== */
+.post-header {
+  margin-bottom: 20px;
+}
+
+.post-user {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.user-avatar {
+  font-size: 40px;
+}
+
+.username {
+  font-weight: 700;
+  font-size: 16px;
+  color: #333;
+}
+
+.post-time {
+  font-size: 14px;
+  color: #999;
+}
+
+/* ==================== POST CONTENT ==================== */
+.post-title {
+  font-size: 22px;
+  font-weight: 700;
+  color: #2C5F77;
+  margin-bottom: 15px;
+}
+
+.post-content {
+  font-size:  16px;
+  line-height: 1.6;
+  color: #555;
+  margin-bottom: 20px;
+}
+
+/* ==================== POST ACTIONS ==================== */
+.post-actions {
+  display:  flex;
+  gap: 10px;
+  flex-wrap:  wrap;
+}
+
+.action-btn {
+  flex: 1;
+  padding:  12px 20px;
+  border: none;
+  border-radius: 12px;
+  font-size:  14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.like-btn {
+  background: #FFE5E5;
+  color: #FF6B6B;
+}
+
+.like-btn.liked {
+  background: #FF6B6B;
+  color: white;
+}
+
+.view-more-btn {
+  background: #D4F1F4;
+  color: #2C5F77;
+}
+
+.report-btn {
+  background:  #FFD6D6;
+  color: #D32F2F;
+}
+
+.action-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+}
+
+/* ==================== WRITE POST PAGE ==================== */
+.write-post-page {
+  min-height: 100vh;
+  background: linear-gradient(to bottom, #F5F5F5 0%, #E8F4F8 100%);
+  padding: 20px;
+  padding-bottom: 100px;
+}
+
+.write-post-container {
+  max-width: 600px;
+  margin: 0 auto;
+  background: white;
+  padding: 30px;
+  border-radius:  20px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.page-title {
+  font-size: 26px;
+  color: #2C5F77;
+  margin-bottom: 25px;
+  text-align:  center;
+}
+
+.input-group {
+  margin-bottom: 20px;
+  position: relative;
+}
+
+.input-group label {
+  display: block;
+  font-size: 14px;
+  font-weight: 600;
+  color: #555;
+  margin-bottom: 8px;
+}
+
+.title-input,
+.content-textarea {
+  width: 100%;
+  padding: 12px 16px;
+  border: 2px solid #E0E0E0;
+  border-radius: 12px;
+  font-size:  15px;
+  font-family: inherit;
+  outline: none;
+  transition: border-color 0.2s;
+  resize: none;
+}
+
+.title-input:focus,
+.content-textarea:focus {
+  border-color: #AAE3E2;
+}
+
+.char-count {
+  position: absolute;
+  bottom: -20px;
+  right: 0;
+  font-size: 12px;
+  color: #999;
+}
+
+.submit-post-btn {
+  width: 100%;
+  padding:  15px;
+  background:  #AAE3E2;
+  color: #2C5F77;
+  border: none;
+  border-radius: 12px;
+  font-size:  16px;
+  font-weight:  700;
+  cursor: pointer;
+  transition: all 0.3s;
+  margin-top: 25px;
+}
+
+.submit-post-btn:hover:not(:disabled) {
+  background: #8FD3D2;
+  transform:translateY(-2px);
+  box-shadow:0 4px 8px rgba(0, 0, 0, 0.15);
+}
+
+.submit-post-btn:disabled {
+  opacity:  0.5;
+  cursor: not-allowed;
+}
+
+/* ==================== COMMUNITY MAP (OCEAN WITH ISLANDS) ==================== */
+.ocean-map-mobile-temp {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  background: #A8D8EA;
+}
+
+/* Ocean background image */
+.ocean-background-img {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height:  100%;
+  object-fit: cover;
+  z-index: 0;
+  pointer-events: none;
+  user-select: none;
+}
+
+/* Islands layer */
+.islands-layer {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width:  100%;
+  height: 100%;
+  z-index: 10;
+  pointer-events: none;
+}
+
+/* Individual island buttons */
+.island-button-temp {
+  position: absolute;
+  background: transparent;
+  border: none;
+  padding: 0;
+  cursor: pointer;
+  transition: transform 0.3s ease;
+  pointer-events: auto;
+  z-index: 15;
+  outline: none;
+}
+
+.island-button-temp:hover {
+  transform: scale(1.15);
+  z-index: 20;
+}
+
+.island-button-temp:active {
+  transform: scale(0.95);
+}
+
+/* Island images */
+.island-img-temp {
+  width: 80px;
+  height: 80px;
+  object-fit:  contain;
+  pointer-events: none;
+  user-select: none;
+  display: block;
+  filter: drop-shadow(2px 4px 6px rgba(0, 0, 0, 0.2));
+}
+
+/* Responsive island sizes */
+@media (max-width: 768px) {
+  .island-img-temp {
+    width: 70px;
+    height: 70px;
+  }
+}
+
+@media (max-width: 480px) {
+  .island-img-temp {
+    width:  60px;
+    height:  60px;
+  }
+}
+
+/* Navigation buttons container (if you have back/home buttons) */
+.navigation-buttons {
+  position: absolute;
+  top: 20px;
+  right: 20px;
+  z-index:  100;
+  display: flex;
+  gap:  10px;
+}
+
+/* Bottom buttons already styled inline in your JSX */
+
+/* ==================== POST DETAIL PAGE ==================== */
+.post-detail-page {
+  min-height: 100vh;
+  padding: 20px;
+  padding-bottom: 100px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
+  padding-top: 40px;
+  overflow-x: hidden;
+}
+
+.post-detail-container {
+  max-width: 700px;
+  width: 100%;
+  max-height: 85vh;
+  background: white;
+  padding: 30px;
+  border-radius:  20px;
+  box-shadow:  0 4px 12px rgba(0, 0, 0, 0.1);
+  overflow:  hidden;
+  display: flex;
+  flex-direction: column;
+}
+
+.post-detail-content {
+  flex-shrink: 0;
+  margin-bottom: 20px;
+}
+
+.post-actions-detail {
+  display: flex;
+  gap: 15px;
+  margin-bottom: 20px;
+  padding-bottom: 20px;
+  border-bottom: 2px solid #f0f0f0;
+}
+
+/* ==================== COMMENT SECTION WRAPPER ==================== */
+.comment-section-wrapper {
+  display: flex;
+  flex-direction: column;
+  flex:  1;
+  min-height: 0;
+  overflow:  hidden;
+}
+
+.comments-title {
+  font-size:  20px;
+  color: #2C5F77;
+  margin-bottom: 15px;
+  flex-shrink: 0;
+}
+
+/* ==================== SCROLLABLE COMMENTS LIST ONLY ==================== */
+.comments-list-scrollable {
+  flex: 1;
+  overflow-y: auto;
+  overflow-x: hidden;
+  padding-right: 10px;
+  margin-bottom: 15px;
+}
+
+/* Custom scrollbar for comments */
+.comments-list-scrollable::-webkit-scrollbar {
+  width: 8px;
+}
+
+.comments-list-scrollable::-webkit-scrollbar-track {
+  background: #f0f0f0;
+  border-radius: 10px;
+}
+
+.comments-list-scrollable::-webkit-scrollbar-thumb {
+  background: #AAE3E2;
+  border-radius: 10px;
+}
+
+.comments-list-scrollable::-webkit-scrollbar-thumb:hover {
+  background: #8FD3D2;
+}
+
+.no-comments {
+  text-align: center;
+  color: #999;
+  padding: 20px;
+  font-style: italic;
+}
+
+/* ==================== SINGLE COMMENT ==================== */
+.comment {
+  background: #F9F9F9;
+  padding: 15px;
+  border-radius: 12px;
+  margin-bottom:  15px;
+  border-left: 4px solid #AAE3E2;
+  transition: all 0.2s;
+}
+
+.comment-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 8px;
+}
+
+.comment-user {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.comment-avatar {
+  font-size: 24px;
+}
+
+.comment-username {
+  font-weight: 600;
+  color: #333;
+  font-size: 14px;
+}
+
+.comment-time {
+  color: #999;
+  font-size: 12px;
+  margin-left: 8px;
+}
+
+.comment-text {
+  font-size: 15px;
+  line-height:  1.5;
+  color: #555;
+  margin: 0 0 10px 32px;
+}
+
+/* ==================== DELETE COMMENT BUTTON ==================== */
+.delete-comment-btn {
+  background: transparent;
+  border: none;
+  color: #ff4444;
+  cursor: pointer;
+  font-size: 18px;
+  padding: 4px 8px;
+  transition: all 0.2s;
+  opacity: 0.7;
+}
+
+.delete-comment-btn:hover {
+  opacity: 1;
+  transform: scale(1.2);
+}
+
+/* ==================== COMMENT ACTIONS (LIKE & REPORT) ==================== */
+.comment-actions-detail {
+  display: flex;
+  gap: 15px;
+  margin-top: 12px;
+  margin-left: 32px;
+}
+
+.comment-actions-detail .action-btn {
+  padding:  8px 16px;
+  border: none;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.comment-actions-detail .like-btn {
+  background: transparent;
+  color: #666;
+}
+
+.comment-actions-detail.like-btn:hover {
+  background: #FFE5E5;
+  color: #FF6B6B;
+}
+
+.comment-actions-detail .like-btn.liked {
+  color: #FF6B6B;
+}
+
+.comment-actions-detail .report-btn {
+  background: transparent;
+  color:  #666;
+}
+
+.comment-actions-detail .report-btn:hover {
+  background: #FFF3CD;
+  color: #856404;
+}
+
+/* ==================== FIXED COMMENT INPUT AT BOTTOM ==================== */
+.comment-input-wrapper {
+  flex-shrink: 0;
+  background:  white;
+  padding-top:  15px;
+  border-top: 2px solid #f0f0f0;
+}
+
+.comment-input-container {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  padding: 0;
+}
+
+.comment-input {
+  flex:  1;
+  padding: 12px 16px;
+  border: 2px solid #E0E0E0;
+  border-radius: 25px;
+  font-size: 15px;
+  outline: none;
+  transition: border-color 0.2s;
+  background: white;
+  font-family: 'Lato', sans-serif;  /* ← Lato font */
+}
+
+.comment-input::placeholder {
+  font-family: 'Lato', sans-serif;  /* ← Lato font for placeholder */
+  color: #999;
+}
+
+.comment-input:focus {
+  border-color: #AAE3E2;
+}
+
+.send-comment-btn {
+  width: 45px;              /* ← Smaller:  Fixed width */
+  height: 45px;             /* ← Smaller: Fixed height */
+  padding: 0;               /* ← Remove padding */
+  background: #AAE3E2;
+  border: none;
+  border-radius: 50%;       /* ← Round button */
+  cursor: pointer;
+  transition: all 0.2s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;           /* Don't shrink */
+}
+
+.send-comment-btn:hover:not(:disabled) {
+  background: #8FD3D2;
+  transform: scale(1.05);
+}
+
+.send-comment-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.send-arrow-icon {
+  width: 20px;              /* ← Icon size */
+  height: 20px;
+  object-fit: contain;
+  filter: brightness(0) saturate(100%) invert(28%) sepia(18%) saturate(1612%) hue-rotate(147deg) brightness(92%) contrast(87%);  /* ← Make icon dark teal */
+}
+
+.send-comment-btn:disabled .send-arrow-icon {
+  opacity: 0.5;
+}
+
+/* ==================== HARASSMENT WARNING MODAL ==================== */
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom:  0;
+  background: rgba(0, 0, 0, 0.7);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 2000;
+  animation: fadeIn 0.2s ease;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+.harassment-warning-modal {
+  background: white;
+  padding: 25px;
+  border-radius:  20px;
+  max-width:  320px;
+  width: 90%;
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
+  position: relative;
+  animation: slideUp 0.3s ease;
+  max-height: 80vh;
+  overflow-y: auto;
+}
+
+@keyframes slideUp {
+  from {
+    opacity: 0;
+    transform:  translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform:  translateY(0);
+  }
+}
+
+.close-x-btn {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  background: transparent;
+  border: none;
+  font-size: 22px;
+  color: #999;
+  cursor: pointer;
+  width: 28px;
+  height: 28px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s;
+  font-family: 'Lato', sans-serif;
+}
+
+.close-x-btn:hover {
+  color: #333;
+  transform: rotate(90deg);
+}
+
+.warning-header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom:  18px;
+}
+
+.warning-icon {
+  font-size:  36px;
+}
+
+.warning-header h3 {
+  font-size: 18px;
+  color: #D32F2F;
+  margin: 0;
+  font-family:  'Old Standard TT', serif;
+  font-weight: 700;
+}
+
+.ai-detection-box {
+  background: #F5F5F5;
+  padding: 12px;
+  border-radius:  12px;
+  display: flex;
+  gap: 12px;
+  margin-bottom: 18px;
+  border-left: 4px solid #FF9800;
+}
+
+.ai-icon {
+  font-size: 32px;
+}
+
+.ai-info h4 {
+  margin: 0 0 8px 0;
+  color: #333;
+  font-size: 15px;
+  font-family:  'Lato', sans-serif;
+  font-weight: 700;
+}
+
+.detection-details {
+  list-style: none;
+  padding: 0;
+  margin:  0;
+}
+
+.detection-details li {
+  font-size: 13px;
+  color: #666;
+  margin-bottom: 4px;
+  font-family: 'Lato', sans-serif;
+}
+
+.detection-details strong {
+  color: #D32F2F;
+  font-weight: 700;
+}
+
+.flagged-words-section {
+  margin-bottom: 18px;
+}
+
+.section-label {
+  font-size: 13px;
+  color: #666;
+  margin-bottom: 8px;
+  font-weight: 600;
+  font-family: 'Lato', sans-serif;
+}
+
+.flagged-words-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.flagged-word-chip {
+  background: #FFE5E5;
+  color: #D32F2F;
+  padding: 5px 10px;
+  border-radius: 15px;
+  font-size:  12px;
+  font-weight: 600;
+  font-family: 'Lato', sans-serif;
+}
+
+.warning-message {
+  font-size: 14px;
+  line-height: 1.6;
+  color: #555;
+  text-align: center;
+  margin: 0;
+  padding: 12px;
+  background: #FFF3CD;
+  border-radius: 10px;
+  font-family: 'Lato', sans-serif;
+}
+

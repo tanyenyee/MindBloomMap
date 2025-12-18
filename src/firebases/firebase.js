@@ -13,6 +13,8 @@ const firebaseConfig = {
   measurementId: "G-3WK9Y4JD2B"
 };
 
+//console.log("MY KEY IS:", process.env.REACT_APP_API_KEY);
+
 const app = initializeApp(firebaseConfig);
 export const auth = getAuth(app);
 export const db = getDatabase(app);
