@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
-<<<<<<< HEAD
->>>>>>> 8023c9e594b9057239cb2de7113d5ff2e0b7b4fc
+
 #root {
   max-width: 1280px;
   margin: 0 auto;
@@ -22,10 +19,6 @@
   filter: drop-shadow(0 0 2em #61dafbaa);
 }
 
-@keyframes logo-spin {
-<<<<<<< HEAD
-=======
-=======
 .App {
   text-align: center;
 }
@@ -57,8 +50,7 @@
 }
 
 @keyframes App-logo-spin {
->>>>>>> 3959c23a1a4a38192c413bc97c3023d1bae8071a
->>>>>>> 8023c9e594b9057239cb2de7113d5ff2e0b7b4fc
+
   from {
     transform: rotate(0deg);
   }
@@ -66,10 +58,7 @@
     transform: rotate(360deg);
   }
 }
-<<<<<<< HEAD
-=======
-<<<<<<< HEAD
->>>>>>> 8023c9e594b9057239cb2de7113d5ff2e0b7b4fc
+
 
 @media (prefers-reduced-motion: no-preference) {
   a:nth-of-type(2) .logo {
@@ -84,8 +73,4 @@
 .read-the-docs {
   color: #888;
 }
-<<<<<<< HEAD
-=======
-=======
->>>>>>> 3959c23a1a4a38192c413bc97c3023d1bae8071a
->>>>>>> 8023c9e594b9057239cb2de7113d5ff2e0b7b4fc
+

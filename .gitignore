@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 HEAD
->>>>>>> 8023c9e594b9057239cb2de7113d5ff2e0b7b4fc
 # Logs
 logs
 *.log
@@ -28,8 +25,6 @@ dist-ssr
 *.njsproj
 *.sln
 *.sw?
-<<<<<<< HEAD
-=======
 
 # See https://help.github.com/articles/ignoring-files/ for more about ignoring files.
 
@@ -56,4 +51,3 @@ npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
 3959c23a1a4a38192c413bc97c3023d1bae8071a
->>>>>>> 8023c9e594b9057239cb2de7113d5ff2e0b7b4fc

@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
-<<<<<<< HEAD
->>>>>>> 8023c9e594b9057239cb2de7113d5ff2e0b7b4fc
+
 :root {
   font-family: system-ui, Avenir, Helvetica, Arial, sans-serif;
   line-height: 1.5;
@@ -13,24 +10,17 @@
 
   font-synthesis: none;
   text-rendering: optimizeLegibility;
-<<<<<<< HEAD
-=======
-=======
+}
+
 body {
   margin: 0;
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
     'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
     sans-serif;
->>>>>>> 3959c23a1a4a38192c413bc97c3023d1bae8071a
->>>>>>> 8023c9e594b9057239cb2de7113d5ff2e0b7b4fc
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
 
-<<<<<<< HEAD
-=======
-<<<<<<< HEAD
->>>>>>> 8023c9e594b9057239cb2de7113d5ff2e0b7b4fc
 a {
   font-weight: 500;
   color: #646cff;
@@ -38,14 +28,6 @@ a {
 }
 a:hover {
   color: #535bf2;
-}
-
-body {
-  margin: 0;
-  display: flex;
-  place-items: center;
-  min-width: 320px;
-  min-height: 100vh;
 }
 
 h1 {
@@ -83,12 +65,9 @@ button:focus-visible {
   button {
     background-color: #f9f9f9;
   }
-<<<<<<< HEAD
-=======
-=======
+}
+
 code {
   font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
     monospace;
->>>>>>> 3959c23a1a4a38192c413bc97c3023d1bae8071a
->>>>>>> 8023c9e594b9057239cb2de7113d5ff2e0b7b4fc
 }
