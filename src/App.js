@@ -24,6 +24,7 @@ function App() {
     <AuthProvider>
       <ToastProvider>
         <Router>
+          <div className="app-frame">
           <Routes>
             {/* Splash Screen (Initial Landing) */}
             <Route path="/" element={<SplashPage />} />
@@ -108,6 +109,7 @@ function App() {
             {/* Fallback Route */}
             <Route path="*" element={<Navigate to="/" replace />} />
           </Routes>
+          </div>
         </Router>
       </ToastProvider>
     </AuthProvider>
