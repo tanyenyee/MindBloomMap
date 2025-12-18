@@ -17,8 +17,8 @@ const SelfCare = () => {
   const navigate = useNavigate();
   const [view, setView] = useState(VIEWS.FOREST);
 
-  // Timer state
-  const INITIAL_SECONDS = 5 * 60; 
+  // Timer state for the Relaxation view
+  const INITIAL_SECONDS = 5 * 60; // 5 minutes
   const [secondsLeft, setSecondsLeft] = useState(INITIAL_SECONDS);
   const [running, setRunning] = useState(false);
 
@@ -44,6 +44,7 @@ const SelfCare = () => {
 
   const renderForest = () => (
     <div style={styles.forestView}>
+      {/* Capybara / AI Friend clickable image */}
       <img
         src={capybaraImg}
         alt="AI Friend"
@@ -51,6 +52,8 @@ const SelfCare = () => {
         onClick={() => navigate('/ai-friend')}
         role="button"
       />
+
+      {/* Relaxation stones clickable image */}
       <img
         src={stonesImg}
         alt="Relaxation"
@@ -58,6 +61,8 @@ const SelfCare = () => {
         onClick={() => setView(VIEWS.RELAXATION)}
         role="button"
       />
+
+      {/* Music bird clickable image (navigates to the MusicPlayer page) */}
       <img
         src={birdImg}
         alt="Music"
@@ -96,11 +101,8 @@ const SelfCare = () => {
   );
 
   return (
-    <div style={styles.mainContainer}>
-      {/* WRAPPER to position Navigation Buttons in Top-Right */}
-      <div style={styles.navWrapper}>
-        <NavigationButtons />
-      </div>
+    <div className="main-page-container" style={styles.mainContainer}>
+      <NavigationButtons />
       
       {/* Fixed background */}
       <img 
@@ -109,7 +111,7 @@ const SelfCare = () => {
         style={styles.backgroundImage}
       />
 
-      {/* Content area */}
+      {/* Content area - overlays the background */}
       <div style={styles.contentArea}>
         {view === VIEWS.FOREST && renderForest()}
         {view === VIEWS.RELAXATION && renderRelaxation()}
@@ -123,19 +125,6 @@ const styles = {
   mainContainer: {
     position: 'relative',
     overflow: 'hidden',
-    width: '360px',
-    height: '780px',
-    margin: '0 auto', 
-    borderRadius: '20px',
-    boxShadow: '0 10px 30px rgba(0,0,0,0.25)',
-    backgroundColor: '#f0f0f0', 
-  },
-  // UPDATED: Pushed to the right edge to match Homepage
-  navWrapper: {
-    position: 'absolute',
-    top: '0px', 
-    right: '0px', 
-    zIndex: 50,
   },
   backgroundImage: {
     position: 'absolute',
@@ -151,12 +140,14 @@ const styles = {
     zIndex: 10,
     width: '100%',
     height: '100%',
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
   },
   forestView: {
     position: 'relative',
     width: '100%',
     height: '100%',
-    overflow: 'hidden',
   },
   timer: { 
     fontSize: 48, 
@@ -169,10 +160,10 @@ const styles = {
     borderRadius: 10,
     textAlign: 'center',
     minWidth: 300,
-    position: 'absolute',
-    top: '50%',
-    left: '50%',
-    transform: 'translate(-50%, -50%)',
+    display: 'flex',
+    flexDirection: 'column',
+    alignItems: 'center',
+    gap: 12,
     boxShadow: '0 4px 6px rgba(0, 0, 0, 0.1)',
   },
   musicContainer: {
@@ -181,17 +172,17 @@ const styles = {
     borderRadius: 10,
     textAlign: 'center',
     minWidth: 300,
-    position: 'absolute',
-    top: '50%',
-    left: '50%',
-    transform: 'translate(-50%, -50%)',
+    display: 'flex',
+    flexDirection: 'column',
+    alignItems: 'center',
+    gap: 12,
     boxShadow: '0 4px 6px rgba(0, 0, 0, 0.1)',
   },
   verticalButtons: { 
     display: 'flex', 
     flexDirection: 'column', 
     gap: 10, 
-    width: '100%', 
+    width: '70%', 
     alignItems: 'center' 
   },
   bigButton: { 
@@ -205,38 +196,32 @@ const styles = {
     color: 'white',
     fontWeight: 'bold',
   },
-  // --- UPDATED POSITIONS BELOW ---
   capybaraImg: {
     position: 'absolute',
     left: '5%',
-    // UPDATED: Moved down to 75% to sit on the lower left grass
-    top: '70%', 
-    transform: 'translateY(-50%)',
-    width: '45%', // Increased size slightly for better visibility
-    height: 'auto', 
+    top: '50%',
+    width: 221,
+    height: 221,
     objectFit: 'contain',
     cursor: 'pointer',
     zIndex: 20,
   },
   relaxationImg: {
     position: 'absolute',
-    right: '5%',
-    // UPDATED: Moved down to 70% (Grass is higher on the right side)
-    top: '65%', 
-    transform: 'translateY(-50%)',
-    width: '40%',
-    height: 'auto',
+    right: '-14%',
+    top: '57%',
+    width: 240,
+    height: 240,
     objectFit: 'contain',
     cursor: 'pointer',
     zIndex: 20,
   },
   musicImg: {
     position: 'absolute',
-    left: '70%',
-    bottom: '5%', // Kept at bottom center
-    transform: 'translateX(-50%)',
-    width: '50%',
-    height: 'auto',
+    left: '15%',
+    bottom: '-2%',
+    width: 252,
+    height: 252,
     objectFit: 'contain',
     cursor: 'pointer',
     zIndex: 20,

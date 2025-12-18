@@ -1,4 +1,3 @@
-//ToastContext.js
 import React, { createContext, useContext, useState } from 'react';
 import Toast from '../components/UI/Toast';
 
