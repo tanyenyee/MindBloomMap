@@ -11,7 +11,7 @@ import btnWrite from '../assets/images/btn-write.png';
 // Import Navigation Component
 import NavigationButtons from './NavigationButtons';
 
-export default function CommunityMap({ onViewMore, onGoToWritePost }) {
+export default function CommunityMap({ onViewMore, onGoToWritePost, onGoToMyPosts }) {
   const [selectedPost, setSelectedPost] = useState(null);
   // Shuffle function to randomize posts
 const shuffleArray = (array) => {
@@ -209,6 +209,46 @@ const islandPositions = [
     />
   </button>
 </div>
+
+      {/* My Posts Button - Bottom Right */}
+      <button 
+        onClick={onGoToMyPosts}
+        type="button"
+        title="My Posts"
+        style={{
+          position: 'absolute',
+          bottom: '20px',
+          right: '20px',
+          width: '70px',
+          height: '70px',
+          background: 'transparent',
+          border: 'none',
+          padding: 0,
+          cursor: 'pointer',
+          transition: 'transform 0.2s ease',
+          zIndex: 50,
+        }}
+        onMouseEnter={(e) => {
+          e.currentTarget.style.transform = 'scale(1.1)';
+        }}
+        onMouseLeave={(e) => {
+          e.currentTarget.style.transform = 'scale(1)';
+        }}
+      >
+        <div style={{
+          width: '100%',
+          height: '100%',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          background: 'linear-gradient(135deg, #FFD47F 0%, #FFAD4F 100%)',
+          borderRadius: '50%',
+          boxShadow: '0 4px 8px rgba(0, 0, 0, 0.3)',
+          fontSize: '36px',
+        }}>
+          📝
+        </div>
+      </button>
 
       {/* Post preview modal */}
       {selectedPost && (

@@ -2,9 +2,11 @@ import React, { useState } from 'react';
 import { analyzeToxicity } from '../utils/toxicityAnalysis';
 import HarassmentWarningModal from './HarassmentWarningModal';
 import { addNewPost } from '../data/dummyPosts';
+import { useAuth } from '../../../context/AuthContext';
 import postDetailBg from '../assets/images/postdetails-bg.png';
 
 export default function WritePostPage({ onBack, onPostCreated }) {
+  const { user } = useAuth();
   const [title, setTitle] = useState('');
   const [content, setContent] = useState('');
   const [showWarning, setShowWarning] = useState(false);
@@ -28,7 +30,8 @@ export default function WritePostPage({ onBack, onPostCreated }) {
 
     // Create post
     addNewPost({
-      username: "CurrentUser",
+      userId: user?.uid,
+      username: user?.username || "CurrentUser",
       title:  title.trim(),
       content: content.trim()
     });

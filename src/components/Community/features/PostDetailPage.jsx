@@ -1,10 +1,10 @@
 import React, { useState } from 'react';
-import { dummyPosts } from '../data/dummyPosts';
+import { postsData } from '../data/dummyPosts';
 import CommentSection from './CommentSection';
 import postDetailBg from '../assets/images/postdetails-bg.png';
 
 export default function PostDetailPage({ postId, onBack, onGoToReport }) {
-  const [post, setPost] = useState(dummyPosts.find(p => p.id === postId));
+  const [post, setPost] = useState(postsData.find(p => p.id === postId));
   const [liked, setLiked] = useState(false);
 
   if (!post) {

@@ -383,3 +383,11 @@ export function addNewPost(post) {
   postsData.unshift(newPost);
   return newPost;
 }
+export function deletePost(postId) {
+  const index = postsData.findIndex(post => post.id === postId);
+  if (index !== -1) {
+    postsData.splice(index, 1);
+    return true;
+  }
+  return false;
+}
