@@ -59,8 +59,10 @@ export default function CommentSection({ postId, comments, onDeleteComment }) {
   };
 
   const handleReportComment = (comment) => {
-    console.log('Report comment:', comment. id, comment.text);
-    window.location.href = '/emergency-report';
+    console.log('Report comment:', comment.id, comment.text);
+    alert(`🚨 Comment reported: "${comment.text}"\n\nThank you for helping keep our community safe.`);
+    // TODO: Replace with actual report API call
+    // window.location.href = '/emergency-report';
   };
 
   return (

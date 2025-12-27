@@ -8,8 +8,8 @@ const NavigationButtons = () => {
 
   const buttons = [
     { alt: 'Back', onClick: () => navigate('/main', { replace: true}), title: 'Go back to previous page' },
-    { alt: 'Main Page', onClick:  () => navigate('/main', { replace: true }), title: 'Return to main page' },
-    { alt:  'Profile Page', onClick: () => navigate('/profile'), title: 'Go to profile page' },
+    { alt: 'Main Page', onClick: () => navigate('/main', { replace: true }), title: 'Return to main page' },
+    { alt: 'Profile Page', onClick: () => navigate('/profile'), title: 'Go to profile page' },
   ];
 
   const containerStyle = {
@@ -52,7 +52,7 @@ const NavigationButtons = () => {
           aria-label={btn.alt}
           title={btn.title}
           style={getButtonStyle(idx)}
-          onMouseDown={() => setPressed({ ... pressed, [idx]: true })}
+          onMouseDown={() => setPressed({ ...pressed, [idx]: true })}
           onMouseUp={() => {
             setPressed({ ...pressed, [idx]: false });
             btn.onClick();

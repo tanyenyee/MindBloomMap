@@ -15,7 +15,7 @@ const NavigationButtons = () => {
   const containerStyle = {
     position: 'absolute',
     top: '12px',
-    right: '12px',
+    right: '0px',
     display: 'flex',
     gap: '10px',
     zIndex: 1000,

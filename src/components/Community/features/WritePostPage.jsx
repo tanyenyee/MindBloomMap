@@ -11,7 +11,7 @@ export default function WritePostPage({ onBack, onPostCreated }) {
   const [toxicityResult, setToxicityResult] = useState(null);
 
   const handleSubmit = () => {
-    if (!title. trim() || !content.trim()) {
+    if (!title.trim() || !content.trim()) {
       alert('Please fill in both title and content');
       return;
     }
@@ -29,11 +29,11 @@ export default function WritePostPage({ onBack, onPostCreated }) {
     // Create post
     addNewPost({
       username: "CurrentUser",
-      title:  title.trim(),
+      title: title.trim(),
       content: content.trim()
     });
 
-    alert('Post created successfully!  🌸');
+    alert('Post created successfully! 🌸');
     
     // Navigate back to community
     onPostCreated();
@@ -61,11 +61,11 @@ return (
       className="back-btn-detail" 
       onClick={onBack}
       style={{
-        position:  'absolute',
-        top:  '15px',
-        left:  '15px',
-        background:  'white',
-        border:  '2px solid #2C5F77',
+        position: 'absolute',
+        top: '15px',
+        left: '15px',
+        background: 'white',
+        border: '2px solid #2C5F77',
         padding: '8px 16px',
         borderRadius: '20px',
         fontSize: '13px',
@@ -162,7 +162,7 @@ return (
             color:  '#999',
             fontFamily:  "'Lato', sans-serif",
           }}>
-            {title. length}/100
+            {title.length}/100
           </span>
         </div>
 
@@ -212,7 +212,7 @@ return (
             color: '#999',
             fontFamily: "'Lato', sans-serif",
           }}>
-            {content. length}/500
+            {content.length}/500
           </span>
         </div>
       </div>
@@ -229,7 +229,7 @@ return (
           style={{
             width: '100%',
             padding: '14px',
-            background: (! title.trim() || !content.trim()) ? '#ccc' : '#AAE3E2',
+            background: (!title.trim() || !content.trim()) ? '#ccc' : '#AAE3E2',
             color: '#2C5F77',
             border: 'none',
             borderRadius: '25px',
@@ -237,20 +237,20 @@ return (
             fontWeight: '700',
             cursor: (!title.trim() || !content.trim()) ? 'not-allowed' : 'pointer',
             transition: 'all 0.3s',
-            fontFamily: "'Old Standard TT', serif",  // ← Old Standard TT
-            opacity: (! title.trim() || !content.trim()) ? 0.6 : 1,
+            fontFamily: "'Old Standard TT', serif",
+            opacity: (!title.trim() || !content.trim()) ? 0.6 : 1,
           }}
           onMouseEnter={(e) => {
-            if (title. trim() && content.trim()) {
-              e.target.style. background = '#8FD3D2';
-              e.target. style.transform = 'translateY(-2px)';
+            if (title.trim() && content.trim()) {
+              e.target.style.background = '#8FD3D2';
+              e.target.style.transform = 'translateY(-2px)';
               e.target.style.boxShadow = '0 4px 12px rgba(170, 227, 226, 0.4)';
             }
           }}
           onMouseLeave={(e) => {
             if (title.trim() && content.trim()) {
               e.target.style.background = '#AAE3E2';
-              e.target. style.transform = 'translateY(0)';
+              e.target.style.transform = 'translateY(0)';
               e.target.style.boxShadow = 'none';
             }
           }}

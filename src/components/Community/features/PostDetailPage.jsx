@@ -18,7 +18,9 @@ export default function PostDetailPage({ postId, onBack, onGoToReport }) {
 
   const handleReport = () => {
     console.log('Report post:', post.id, post.title);
-    window.location.href = '/emergency-report';
+    alert(`🚨 Report submitted for: "${post.title}"\n\nThank you for helping keep our community safe.`);
+    // TODO: Replace with actual report API call
+    // window.location.href = '/emergency-report';
   };
 
   const handleDeleteComment = (commentId) => {

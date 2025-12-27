@@ -7,6 +7,7 @@ import './styles/Community.css';
 function Community() {
   const [currentScreen, setCurrentScreen] = useState('map'); // 'map', 'post-detail', 'write-post'
   const [selectedPostId, setSelectedPostId] = useState(null);
+  const [refreshKey, setRefreshKey] = useState(0); // For refreshing the map
 
   // Handle viewing post detail
   const handleViewMore = (postId) => {
@@ -28,6 +29,13 @@ function Community() {
   // Handle after post is created
   const handlePostCreated = () => {
     setCurrentScreen('map');
+    setRefreshKey(prev => prev + 1); // Trigger refresh
+  };
+
+  // Handle refresh map
+  const handleRefreshMap = () => {
+    setRefreshKey(prev => prev + 1);
+    console.log('Community map refreshed');
   };
 
   // Handle report (temporary - Shuxian will handle)
@@ -49,8 +57,10 @@ function Community() {
       {/* Show Community Map (Ocean with Islands) */}
       {currentScreen === 'map' && (
         <CommunityMap 
+          key={refreshKey}
           onViewMore={handleViewMore}
           onGoToWritePost={handleGoToWritePost}
+          onRefresh={handleRefreshMap}
           onBackToMain={handleBackToMain}
           onGoToProfile={handleGoToProfile}
         />
