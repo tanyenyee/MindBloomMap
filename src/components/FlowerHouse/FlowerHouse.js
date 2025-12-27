@@ -181,8 +181,6 @@ const FlowerHouse = () => {
             <NavigationButtons /> 
             
             <div className="app-viewport-center">
-                <h1 className="flowerhouse-app-title">Flower House</h1>
-
                 {/* 1. YEARLY NAVIGATION */}
                 <div className="yearly-nav-wrapper"> 
                     <div className="year-pill-nav">
