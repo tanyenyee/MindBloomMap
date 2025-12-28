@@ -128,11 +128,13 @@
   align-items:center;
   gap:8px;
   padding: 12px 6px;
-  position: fixed;
-  bottom: 20px;
+  position: absolute;
+  bottom: 60px;
   left: 12px;
   right: 12px;
+  width: calc(100% - 24px);
   z-index: 100;
+  box-sizing: border-box;
 }
 .progress-bar-outer { flex: 1; height: 12px; background: rgba(0,0,0,0.06); border-radius: 8px; overflow: hidden; }
 .progress-fill { height: 100%; background: linear-gradient(90deg,#66bb6a,#a5d6a7); transition: width 300ms ease; }
