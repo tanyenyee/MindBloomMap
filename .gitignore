@@ -1,4 +1,4 @@
-HEAD
+
 # Logs
 logs
 *.log
@@ -26,6 +26,7 @@ dist-ssr
 *.sln
 *.sw?
 
+
 # See https://help.github.com/articles/ignoring-files/ for more about ignoring files.
 
 # dependencies
@@ -50,4 +51,4 @@ dist-ssr
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
-3959c23a1a4a38192c413bc97c3023d1bae8071a
+
