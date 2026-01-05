@@ -1,12 +1,13 @@
-// src/context/PrivateRoute.js
 import React from "react";
 import { Navigate } from "react-router-dom";
 import { useAuth } from "./AuthContext";
 
 export default function PrivateRoute({ children }) {
-  const { user, loading } = useAuth();
+  // Use 'currentUser' to match your AuthContext.js
+  const { currentUser, loading } = useAuth();
 
-  if (loading) return <div>Loading...</div>; // optional splash/loading while checking
+  if (loading) return <div>Loading...</div>; 
 
-  return user ? children : <Navigate to="/login" replace />;
+  // Redirect to login if currentUser is null
+  return currentUser ? children : <Navigate to="/login" replace />;
 }

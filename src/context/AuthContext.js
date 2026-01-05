@@ -1,52 +1,58 @@
-// src/context/AuthContext.js - 临时安全版本
+// src/context/AuthContext.js
+import React, { createContext, useContext, useState, useEffect } from 'react';
+import { auth } from '../firebases/firebase'; // Ensure path is correct
+import { 
+  onAuthStateChanged, 
+  signInWithEmailAndPassword, 
+  signOut, 
+  createUserWithEmailAndPassword 
+} from 'firebase/auth';
 
-import React, { createContext, useContext, useState } from 'react';
-
-// 1. 创建 Context
 const AuthContext = createContext();
 
-// 2. 导出 AuthProvider 组件
-// 这个组件现在不执行任何 Firebase 认证操作
 export const AuthProvider = ({ children }) => {
-  const [user, setUser] = useState(null);
-  const [loading, setLoading] = useState(false);
+  const [currentUser, setCurrentUser] = useState(null);
+  const [loading, setLoading] = useState(true);
 
-  // 临时模拟登录和注册函数
+  useEffect(() => {
+    // 1. This listener connects to Firebase to see if you are really logged in
+    const unsubscribe = onAuthStateChanged(auth, (user) => {
+      setCurrentUser(user);
+      setLoading(false);
+    });
+    return unsubscribe;
+  }, []);
+
+  // 2. Real Firebase Sign In function
   const signIn = (email, password) => {
-    console.log("认证已被临时跳过：尝试登录");
-    return Promise.resolve(true);
+    return signInWithEmailAndPassword(auth, email, password);
   };
-  const signUp = (email, password) => {
-    console.log("认证已被临时跳过：尝试注册");
-    return Promise.resolve(true);
+
+  const signup = (email, password) => {
+    return createUserWithEmailAndPassword(auth, email, password);
   };
+
   const logOut = () => {
-    console.log("认证已被临时跳过：尝试退出");
-    setUser(null);
-    return Promise.resolve(true);
+    return signOut(auth);
   };
 
   const value = {
-    user,
-    setUser,
+    currentUser,
     signIn,
-    signUp,
+    signup,
     logOut,
     loading,
   };
 
   return (
     <AuthContext.Provider value={value}>
-      {children}
+      {!loading && children}
     </AuthContext.Provider>
   );
-}
+};
 
-// useAuth Hook
 export const useAuth = () => {
   const context = useContext(AuthContext);
-  if (!context) {
-    throw new Error('useAuth 必须在 AuthProvider 内部使用');
-  }
+  if (!context) throw new Error('useAuth must be used within an AuthProvider');
   return context;
 };
