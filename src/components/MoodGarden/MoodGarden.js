@@ -25,7 +25,7 @@ import journalIcon from "../../assets/images/journal_icon.png";
 import flowerHouseIcon from "../../assets/images/flowerhouse_icon.png";
 
 /* ---------- Config / Points ---------- */
-const MOOD_POINTS = { happy: 100, calm: 70, anxious: 50, angry: 40, sad: 20 };
+const MOOD_POINTS = { happy: 50, calm: 40, anxious: 30, angry: 20, sad: 10 };
 const MAX_DAILY_GROWTH = 100;
 const MAX_JOURNAL_POINTS = 30;
 const MAX_WATERING_COUNT = 10;
@@ -73,9 +73,9 @@ export default function MoodGarden() {
   
   // UI State
   const [showMoodModal, setShowMoodModal] = useState(false);
-  const [showJournalModal, setShowJournalModal] = useState(false); // Kept for logic reference
-  const [journalText, setJournalText] = useState("");
   const [showInfoModal, setShowInfoModal] = useState(false);
+  const [showJournalModal, setShowJournalModal] = useState(false); 
+  const [journalText, setJournalText] = useState("");
   
   const [loading, setLoading] = useState(true);
   const [toastMsg, setToastMsg] = useState("");
@@ -85,6 +85,30 @@ export default function MoodGarden() {
 
   // Use the real UID for the database path
   const docPath = currentUser ? `GardenProgress/${currentUser.uid}/${weekKey}` : null;
+
+  // --- REF: Keeps track of latest state instantly ---
+  const gardenRef = useRef({
+    seedChosen: false,
+    selectedSeedIndex: 0,
+    dailyProgress: 0,
+    flowersBloomed: 0,
+    hasBloomedToday: false,
+    moodSubmittedDate: null,
+    journalWordsToday: 0,
+    wateringCountToday: 0
+  });
+
+  const updateState = (updates) => {
+    gardenRef.current = { ...gardenRef.current, ...updates };
+    if (updates.hasOwnProperty('seedChosen')) setSeedChosen(updates.seedChosen);
+    if (updates.hasOwnProperty('selectedSeedIndex')) setSelectedSeedIndex(updates.selectedSeedIndex);
+    if (updates.hasOwnProperty('dailyProgress')) setDailyProgress(updates.dailyProgress);
+    if (updates.hasOwnProperty('flowersBloomed')) setFlowersBloomed(updates.flowersBloomed);
+    if (updates.hasOwnProperty('hasBloomedToday')) setHasBloomedToday(updates.hasBloomedToday);
+    if (updates.hasOwnProperty('moodSubmittedDate')) setMoodSubmittedDate(updates.moodSubmittedDate);
+    if (updates.hasOwnProperty('journalWordsToday')) setJournalWordsToday(updates.journalWordsToday);
+    if (updates.hasOwnProperty('wateringCountToday')) setWateringCountToday(updates.wateringCountToday);
+  };
 
   function showToast(msg, ms = 2000) {
     setToastMsg(msg);
@@ -97,7 +121,7 @@ export default function MoodGarden() {
     return text.trim().split(/\s+/).filter(Boolean).length;
   }
 
-  // 1. LOAD DATA
+  // 1. LOAD DATA (FIXED: Includes Auto-Repair for missing seeds)
   useEffect(() => {
     if (authLoading || !currentUser || !docPath) return;
 
@@ -106,15 +130,55 @@ export default function MoodGarden() {
       setLoading(true);
       try {
         const data = await fetchData(docPath);
-        if (mounted && data) {
-          setSeedChosen(!!data.seedChosen);
-          setSelectedSeedIndex(data.selectedSeedIndex ?? 0);
-          setDailyProgress(data.dailyProgress ?? 0);
-          setFlowersBloomed(data.flowersBloomed ?? 0);
-          setHasBloomedToday(data.hasBloomedTodayDate === todayKey ? !!data.hasBloomedToday : false);
-          setMoodSubmittedDate(data.moodSubmittedDate ?? null);
-          setJournalWordsToday(data.journalWordsToday ?? 0);
-          setWateringCountToday(data.wateringCountToday ?? 0);
+        
+        if (mounted) {
+            const safeData = data || {};
+            
+            // --- AUTO REPAIR LOGIC ---
+            // If we have progress (points or flowers) but 'seedChosen' is false/missing,
+            // we assume the seed was actually chosen (prevents the "Pick Seed" glitch).
+            const hasActivity = (safeData.dailyProgress > 0) || (safeData.flowersBloomed > 0);
+            const correctedSeedChosen = !!safeData.seedChosen || hasActivity;
+
+            const lastActive = safeData.lastActiveDate; 
+            const isNewDay = lastActive !== todayKey;
+
+            if (isNewDay) {
+                console.log("New day detected! Resetting daily counters.");
+                
+                const newState = {
+                    seedChosen: correctedSeedChosen, // Use corrected value
+                    selectedSeedIndex: safeData.selectedSeedIndex ?? 0,
+                    flowersBloomed: safeData.flowersBloomed ?? 0,
+                    // RESET DAILY ITEMS
+                    dailyProgress: 0,
+                    wateringCountToday: 0,
+                    journalWordsToday: 0,
+                    hasBloomedToday: false,
+                    moodSubmittedDate: safeData.moodSubmittedDate === todayKey ? safeData.moodSubmittedDate : null 
+                };
+
+                updateState(newState);
+
+                await writeData(docPath, {
+                    ...newState,
+                    lastActiveDate: todayKey,
+                    updatedAt: Date.now()
+                });
+
+            } else {
+                // SAME DAY: Load normally
+                updateState({
+                    seedChosen: correctedSeedChosen, // Use corrected value
+                    selectedSeedIndex: safeData.selectedSeedIndex ?? 0,
+                    dailyProgress: safeData.dailyProgress ?? 0,
+                    flowersBloomed: safeData.flowersBloomed ?? 0,
+                    hasBloomedToday: safeData.hasBloomedTodayDate === todayKey ? !!safeData.hasBloomedToday : false,
+                    moodSubmittedDate: safeData.moodSubmittedDate ?? null,
+                    journalWordsToday: safeData.journalWordsToday ?? 0,
+                    wateringCountToday: safeData.wateringCountToday ?? 0,
+                });
+            }
         }
       } catch (err) {
         console.error("Load garden error", err);
@@ -127,21 +191,29 @@ export default function MoodGarden() {
   }, [docPath, authLoading, currentUser, todayKey]);
 
   // 2. PERSIST DATA
-  async function persist(changes = {}) {
+  async function persist(explicitChanges = {}) {
     if (!currentUser || !docPath) return;
+
+    if (Object.keys(explicitChanges).length > 0) {
+        updateState(explicitChanges);
+    }
+
+    const currentStats = gardenRef.current;
+
     const payload = {
-      seedChosen,
-      selectedSeedIndex,
-      dailyProgress,
-      flowersBloomed,
-      hasBloomedToday,
-      hasBloomedTodayDate: hasBloomedToday ? todayKey : null,
-      moodSubmittedDate,
-      journalWordsToday,
-      wateringCountToday,
+      seedChosen: currentStats.seedChosen,
+      selectedSeedIndex: currentStats.selectedSeedIndex,
+      flowersBloomed: currentStats.flowersBloomed,
+      dailyProgress: currentStats.dailyProgress,
+      hasBloomedToday: currentStats.hasBloomedToday,
+      hasBloomedTodayDate: currentStats.hasBloomedToday ? todayKey : null,
+      moodSubmittedDate: currentStats.moodSubmittedDate,
+      journalWordsToday: currentStats.journalWordsToday,
+      wateringCountToday: currentStats.wateringCountToday,
+      lastActiveDate: todayKey,
       updatedAt: Date.now(),
-      ...changes,
     };
+
     try {
       await writeData(docPath, payload);
     } catch (err) {
@@ -149,86 +221,80 @@ export default function MoodGarden() {
     }
   }
 
-  // --- NEW FIX: AUTO RECOVERY FOR STUCK STATE ---
+  // --- AUTO RECOVERY for Bloom ---
   useEffect(() => {
-    // If progress is 100% but the bloom flag is false, fix it automatically.
     if (!loading && currentUser && dailyProgress >= MAX_DAILY_GROWTH && !hasBloomedToday) {
       console.log("Auto-correcting: Progress is 100% but bloom not triggered.");
       
-      const newFlowerCount = flowersBloomed < MAX_FLOWERS_PER_WEEK ? flowersBloomed + 1 : flowersBloomed;
+      const currentFlowers = gardenRef.current.flowersBloomed;
+      const newFlowerCount = currentFlowers < MAX_FLOWERS_PER_WEEK ? currentFlowers + 1 : currentFlowers;
 
-      // 1. Update UI State immediately
-      setHasBloomedToday(true);
-      setFlowersBloomed(newFlowerCount);
+      updateState({
+          hasBloomedToday: true,
+          flowersBloomed: newFlowerCount
+      });
       showToast("Flower restored! 🌸");
 
-      // 2. Update Firebase
-      persist({
-        dailyProgress: MAX_DAILY_GROWTH,
-        hasBloomedToday: true,
-        hasBloomedTodayDate: todayKey,
-        flowersBloomed: newFlowerCount
-      });
+      persist(); 
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [loading, currentUser, dailyProgress, hasBloomedToday]);
 
   const handlePlantSeed = (index) => {
-    setSelectedSeedIndex(index);
-    setSeedChosen(true);
-    persist({ 
+    updateState({ 
         seedChosen: true, 
         selectedSeedIndex: index 
     });
+    persist();
   };
 
   function addProgressPoints(points) {
-    // --- UPDATED LOGIC: Don't block if we are at 100 but haven't bloomed yet ---
-    // Only return if we are maxed AND we have bloomed.
-    if (dailyProgress >= MAX_DAILY_GROWTH && hasBloomedToday) {
+    const currentStats = gardenRef.current;
+
+    if (currentStats.dailyProgress >= MAX_DAILY_GROWTH && currentStats.hasBloomedToday) {
       showToast("You’ve helped your plant grow as much as it can today 🌱");
       return;
     }
 
-    const allowed = Math.min(MAX_DAILY_GROWTH - dailyProgress, points || 0);
-    // If we are already at 100 (allowed is 0), we still want to fall through to check bloom logic
-    const newProgress = Math.min(MAX_DAILY_GROWTH, dailyProgress + (allowed > 0 ? allowed : 0));
+    const allowed = Math.min(MAX_DAILY_GROWTH - currentStats.dailyProgress, points || 0);
+    const newProgress = Math.min(MAX_DAILY_GROWTH, currentStats.dailyProgress + (allowed > 0 ? allowed : 0));
     
-    setDailyProgress(newProgress);
+    let bloomUpdates = {};
 
-    if (newProgress >= MAX_DAILY_GROWTH && !hasBloomedToday) {
-      if (flowersBloomed < MAX_FLOWERS_PER_WEEK) {
-        setFlowersBloomed((prev) => {
-          const newVal = prev + 1;
-          setLastBloomedIndex(newVal - 1);
-          setTimeout(() => setLastBloomedIndex(null), 900);
-          return newVal;
-        });
-      }
-      setHasBloomedToday(true);
-      showToast("A flower has bloomed today 🌸");
-      
-      // Persist the bloom state immediately
-      setTimeout(() => persist({
-          dailyProgress: newProgress,
-          hasBloomedToday: true,
-          hasBloomedTodayDate: todayKey,
-          flowersBloomed: flowersBloomed + 1 // Ensure we save the increment
-      }), 0);
-    } else {
-        // Normal save
-        setTimeout(() => persist({ dailyProgress: newProgress }), 0);
+    if (newProgress >= MAX_DAILY_GROWTH && !currentStats.hasBloomedToday) {
+        let newFlowerCount = currentStats.flowersBloomed;
+        
+        if (currentStats.flowersBloomed < MAX_FLOWERS_PER_WEEK) {
+            newFlowerCount = currentStats.flowersBloomed + 1;
+            setLastBloomedIndex(newFlowerCount - 1);
+            setTimeout(() => setLastBloomedIndex(null), 900);
+        }
+        
+        bloomUpdates = {
+            hasBloomedToday: true,
+            flowersBloomed: newFlowerCount
+        };
+        showToast("A flower has bloomed today 🌸");
     }
+
+    const updates = {
+        dailyProgress: newProgress,
+        ...bloomUpdates
+    };
+
+    updateState(updates);
+    persist();
   }
 
   async function fertilizerChoose(mood) {
-    if (moodSubmittedDate === todayKey) {
+    if (gardenRef.current.moodSubmittedDate === todayKey) {
       showToast("Mood already submitted today.");
       setShowMoodModal(false);
       return;
     }
     const pts = MOOD_POINTS[mood] ?? 0;
-    setMoodSubmittedDate(todayKey);
+    
+    updateState({ moodSubmittedDate: todayKey });
     addProgressPoints(pts);
     setShowMoodModal(false);
 
@@ -237,18 +303,19 @@ export default function MoodGarden() {
     } catch (err) {
       console.warn("addMoodLog failed", err);
     }
-    persist({ moodToday: mood, moodSubmittedDate: todayKey });
   }
 
   function waterPlant() {
-    if (wateringCountToday >= MAX_WATERING_COUNT) {
+    const currentWatering = gardenRef.current.wateringCountToday;
+
+    if (currentWatering >= MAX_WATERING_COUNT) {
       showToast("Watering limit reached for today.");
       return;
     }
-    const newCount = wateringCountToday + 1;
-    setWateringCountToday(newCount);
-    addProgressPoints(1);
-    persist({ wateringCountToday: newCount });
+    
+    const newCount = currentWatering + 1;
+    updateState({ wateringCountToday: newCount });
+    addProgressPoints(1); 
 
     const baseId = Date.now();
     const dropletIds = Array.from({ length: 5 }, (_, i) => `${baseId}-${i}`);
@@ -258,14 +325,16 @@ export default function MoodGarden() {
     }, 1200);
   }
 
-  // NOTE: This internal submitJournal is not used if you navigate to /journal, 
-  // but we leave it here for safety.
   async function submitJournal(text) {
     const words = countWords(text);
     const journalPoints = Math.min(MAX_JOURNAL_POINTS, Math.floor(words / 20) * 5);
-    const newWords = (journalWordsToday || 0) + words;
-    setJournalWordsToday(newWords);
+    
+    const currentWords = gardenRef.current.journalWordsToday || 0;
+    const newWords = currentWords + words;
+    
+    updateState({ journalWordsToday: newWords });
     addProgressPoints(journalPoints);
+    
     setShowJournalModal(false);
     setJournalText("");
 
@@ -274,7 +343,6 @@ export default function MoodGarden() {
     } catch (err) {
       console.warn("addJournal failed", err);
     }
-    persist({ journalWordsToday: newWords });
   }
 
   if (authLoading) return <div className="loading-container">Verifying identity...</div>;
@@ -316,13 +384,10 @@ export default function MoodGarden() {
         </div>
         <div className="top-row-spacer" />
         <div style={{ display: "flex", flexDirection: "column", gap: "8px" }}>
-          
-          {/* --- RESTORED: Navigates to the Journal Page --- */}
           <button className="top-btn" onClick={() => navigate('/journal')}>
             <img src={journalIcon} alt="journal" />
             <div>Journal</div>
           </button>
-
           <button className="flowerhouse-main-btn" onClick={() => navigate('/flower-house')}>
             <img src={flowerHouseIcon} alt="flowerhouse" />
             <div>Flower House</div>
