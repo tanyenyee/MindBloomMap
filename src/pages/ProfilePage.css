@@ -1,3 +1,5 @@
+/* src/pages/ProfilePage.css */
+
 /* --- Profile Page Background --- */
 .profile-page .profile-bg {
   position: absolute;
@@ -5,7 +7,7 @@
   width: 100%;
   height: 100%;
   object-fit: cover;
-  border-radius: inherit; /* Matches container radius */
+  border-radius: inherit;
   z-index: 0;
 }
 
@@ -29,6 +31,7 @@
   text-align: center;
   box-shadow: 0 4px 12px rgba(0,0,0,0.1); 
   margin-top: 20px;
+  box-sizing: border-box; /* Added safety */
 }
 
 /* --- Avatar Styling (Main Page) --- */
@@ -43,7 +46,7 @@
   width: 140px;
   height: 140px;
   border-radius: 50%;
-  overflow: hidden; /* Ensures image stays inside circle */
+  overflow: hidden;
   border: 4px solid #aacc44;
 }
 
@@ -75,89 +78,167 @@
 .icon-wrapper { font-size: 1.8rem; width: 40px; text-align: center; }
 .text-wrapper h3 { margin: 0; font-size: 1rem; color: #000; text-align: left; }
 
+/* Make icons ~3x smaller */
+.edit-icon { width: 16px; height: 16px; }
+.emergency-icon, .logout-icon { width: 38px; height: 38px; }
+.icon-wrapper img { display: inline-block; object-fit: contain; }
+
 
 /* =========================
-   MODAL STYLES (Fixed)
+   MODAL STYLES (CENTERED & FIXED)
 ========================= */
+
+/* 1. The Dark Overlay - Centers the white box */
 .modal-overlay {
-  position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+  position: fixed;
+  top: 0; 
+  left: 0;
+  width: 100%; 
+  height: 100%;
   background-color: rgba(0, 0, 0, 0.5);
-  display: flex; justify-content: center; align-items: center;
-  z-index: 900;
+  display: flex;
+  justify-content: center; /* Centers Horizontally */
+  align-items: center;     /* Centers Vertically */
+  z-index: 2000;
 }
 
+/* 2. The White Box - Flexbox forces content to stay inside */
 .modal-content {
-  background: white; padding: 25px; border-radius: 15px;
-  width: 90%; max-width: 350px;
-  box-shadow: 0 5px 15px rgba(0,0,0,0.3);
-  text-align: center;
+  background: white;
+  padding: 25px;
+  border-radius: 20px;
+  
+  width: 85%;          /* Safer width for mobile */
+  max-width: 320px;    /* Fixed max width */
+  
+  display: flex;       /* <--- THIS IS THE KEY FIX */
+  flex-direction: column;
+  align-items: center; /* Forces everything to the center */
+  
+  box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+  position: relative;
+  box-sizing: border-box; 
+  overflow: hidden;    /* Clips anything that tries to stick out */
 }
 
-/* Modal Header */
+/* 3. Header - Full Width */
 .modal-header {
-  display: flex; justify-content: space-between; align-items: center;
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
   margin-bottom: 20px;
 }
-.modal-header h3 { margin: 0; font-size: 1.3rem; color: #333; }
-.close-btn { background: none; border: none; font-size: 1.5rem; cursor: pointer; color: #666; padding: 0 5px; }
 
-/* Modal Body */
-.avatar-edit-wrapper {
-  display: flex; flex-direction: column; align-items: center; gap: 15px; margin-bottom: 25px;
+.modal-header h3 {
+  margin: 0;
+  font-size: 1.4rem;
+  color: #333;
+  flex-grow: 1; 
+  text-align: center;
+  padding-left: 20px; /* Balances the close button visually */
 }
 
-/* New Container to fix "Background" issue */
+.close-btn {
+  background: transparent;
+  border: none;
+  font-size: 1.5rem;
+  cursor: pointer;
+  color: #888;
+  padding: 0;
+  line-height: 1;
+}
+
+/* 4. Body - Full Width & Centered */
+.modal-body {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 15px;
+}
+
+/* Avatar Preview Wrapper */
+.avatar-edit-wrapper {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+}
+
 .preview-container {
-    width: 110px;
-    height: 110px;
-    border-radius: 50%;
-    overflow: hidden; /* STRICTLY crop the image to a circle */
-    border: 3px solid #aacc44;
-    background-color: #f0f0f0; /* Fallback background */
-    margin: 0 auto; /* Center it */
+  width: 110px;
+  height: 110px;
+  border-radius: 50%;
+  overflow: hidden;
+  border: 4px solid #aacc44;
+  background-color: #eee;
+  display: flex;         
+  justify-content: center;
+  align-items: center;
 }
 
 .profile-pic-preview {
   width: 100%;
   height: 100%;
   object-fit: cover;
-  display: block;
 }
 
 .change-photo-btn {
-  background-color: #f0f0f0; border: 1px solid #ccc; padding: 5px 10px;
-  border-radius: 5px; cursor: pointer; font-size: 0.9rem;
+  background-color: #f0f0f0;
+  border: 1px solid #ddd;
+  padding: 6px 12px;
+  border-radius: 20px;
+  font-size: 0.85rem;
+  cursor: pointer;
+  color: #555;
 }
 
-.input-group { text-align: left; margin-bottom: 20px; }
-.input-group label { display: block; margin-bottom: 5px; font-weight: bold; color: #555; font-size: 0.9rem; }
+/* 5. Input Group - Force Full Width */
+.input-group {
+  width: 100%;
+  text-align: left;
+}
+
+.input-group label {
+  display: block;
+  font-size: 0.9rem;
+  font-weight: bold;
+  color: #555;
+  margin-bottom: 6px;
+  margin-left: 4px;
+}
+
 .modal-input {
-  width: 100%; padding: 10px; border: 1px solid #ccc; border-radius: 6px;
-  font-size: 1rem; box-sizing: border-box; background-color: #f9f9f9;
+  width: 100% !important; 
+  padding: 12px;
+  border: 1px solid #ccc;
+  border-radius: 10px;
+  font-size: 1rem;
+  background-color: #f9f9f9;
+  box-sizing: border-box !important; /* Prevents padding from breaking width */
 }
 
-/* Modal Footer */
-.full-width {
-  width: 100%; padding: 12px; font-size: 1rem;
-  background-color: #aacc44; color: white; border: none;
-  border-radius: 8px; cursor: pointer; font-weight: bold;
-}
-.full-width:hover { background-color: #99bb33; }
-
-/* Make icons ~3x smaller */
-.edit-icon {
-  width: 16px;
-  height: 16px;
+/* 6. Footer & Done Button */
+.modal-footer {
+  width: 100%;
+  margin-top: 20px;
 }
 
-.emergency-icon,
-.logout-icon {
-  width: 38px;
-  height: 38px;
+.save-btn {
+  width: 100% !important; 
+  padding: 12px;
+  font-size: 1rem;
+  background-color: #ffcccc; 
+  color: #444;
+  border: none;
+  border-radius: 10px;
+  font-weight: bold;
+  cursor: pointer;
+  box-sizing: border-box !important;
 }
 
-/* Ensure icons don't stretch their containers */
-.icon-wrapper img {
-  display: inline-block;
-  object-fit: contain;
+.save-btn:hover {
+  background-color: #ffb3b3;
 }

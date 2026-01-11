@@ -40,6 +40,11 @@ export async function getUser(userID) {
   return await fetchData(`Users/${userID}`);
 }
 
+export async function updateUser(userID, data) {
+  // Updates specific fields (like username or avatar) for a user
+  return await update(ref(db, `Users/${userID}`), data);
+}
+
 /* ======================================================
    MOOD LOGS (MoodLogs/{userID}/{moodID})
 ====================================================== */

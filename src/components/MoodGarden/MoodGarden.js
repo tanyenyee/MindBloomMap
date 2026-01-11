@@ -1,6 +1,6 @@
-// src/pages/MoodGarden.js
 import React, { useEffect, useState, useRef } from "react";
 import "./MoodGarden.css";
+import { useAuth } from "../../context/AuthContext";
 import {
   writeData,
   fetchData,
@@ -10,7 +10,6 @@ import {
 import NavigationButtons from "../NavigationButtons";
 import { useNavigate } from "react-router-dom";
 
-
 // assets
 import potImg from "../../assets/images/pot.png";
 import redflower from "../../assets/images/redflower.png";
@@ -19,20 +18,20 @@ import blueflower from "../../assets/images/blueflower.png";
 import yellowflower from "../../assets/images/yellowflower.png";
 import pinkflower from "../../assets/images/pinkflower.png";
 import whiteflower from "../../assets/images/whiteflower.png";
-import Plants from "../../assets/images/plant_stem.png"; // stem image
+import Plants from "../../assets/images/plant_stem.png"; 
 import fertilizerIcon from "../../assets/images/fertilizer_icon.png";
 import wateringIcon from "../../assets/images/watering_icon.png";
 import journalIcon from "../../assets/images/journal_icon.png";
 import flowerHouseIcon from "../../assets/images/flowerhouse_icon.png";
 
 /* ---------- Config / Points ---------- */
-const MOOD_POINTS = { happy: 100, calm: 70, anxious: 50, angry: 40, sad: 20 };
+const MOOD_POINTS = { happy: 50, calm: 40, anxious: 30, angry: 20, sad: 10 };
 const MAX_DAILY_GROWTH = 100;
 const MAX_JOURNAL_POINTS = 30;
 const MAX_WATERING_COUNT = 10;
 const MAX_FLOWERS_PER_WEEK = 7;
 
-
+// Helpers
 function getMondayDateKey(date = new Date()) {
   const d = new Date(date);
   const day = d.getDay();
@@ -43,6 +42,7 @@ function getMondayDateKey(date = new Date()) {
   const dd = String(monday.getDate()).padStart(2, "0");
   return `${yyyy}-${mm}-${dd}`;
 }
+
 function todayDateKey(date = new Date()) {
   const d = new Date(date);
   const yyyy = d.getFullYear();
@@ -51,45 +51,64 @@ function todayDateKey(date = new Date()) {
   return `${yyyy}-${mm}-${dd}`;
 }
 
-const FLOWER_IMAGES = [
-  redflower,
-  purpleflower,
-  blueflower,
-  yellowflower,
-  pinkflower,
-  whiteflower,
-];
+const FLOWER_IMAGES = [redflower, purpleflower, blueflower, yellowflower, pinkflower, whiteflower];
 
-export default function MoodGarden({ navigateToFlowerHouse }) {
-  const [uid] = useState("guest"); // swap with auth uid if available
-const navigate = useNavigate();
-  const [weekKey, setWeekKey] = useState(getMondayDateKey());
-  const [todayKey, setTodayKey] = useState(todayDateKey());
-
+export default function MoodGarden() {
+  const { currentUser, loading: authLoading } = useAuth();
+  const navigate = useNavigate();
+  
+  // State for keys
+  const [weekKey] = useState(getMondayDateKey());
+  const [todayKey] = useState(todayDateKey());
+  
+  // Garden State
   const [seedChosen, setSeedChosen] = useState(false);
   const [selectedSeedIndex, setSelectedSeedIndex] = useState(0);
   const [dailyProgress, setDailyProgress] = useState(0);
   const [flowersBloomed, setFlowersBloomed] = useState(0);
   const [hasBloomedToday, setHasBloomedToday] = useState(false);
-
   const [moodSubmittedDate, setMoodSubmittedDate] = useState(null);
   const [journalWordsToday, setJournalWordsToday] = useState(0);
   const [wateringCountToday, setWateringCountToday] = useState(0);
-
+  
+  // UI State
   const [showMoodModal, setShowMoodModal] = useState(false);
-  const [showJournalModal, setShowJournalModal] = useState(false);
-  const [journalText, setJournalText] = useState("");
   const [showInfoModal, setShowInfoModal] = useState(false);
-
+  const [showJournalModal, setShowJournalModal] = useState(false); 
+  const [journalText, setJournalText] = useState("");
+  
   const [loading, setLoading] = useState(true);
   const [toastMsg, setToastMsg] = useState("");
   const toastTimer = useRef(null);
-
-  // NEW: track which flower index just bloomed so we animate only it
   const [lastBloomedIndex, setLastBloomedIndex] = useState(null);
   const [waterDroplets, setWaterDroplets] = useState([]);
 
-  const docPath = `GardenProgress/${uid}/${weekKey}`;
+  // Use the real UID for the database path
+  const docPath = currentUser ? `GardenProgress/${currentUser.uid}/${weekKey}` : null;
+
+  // --- REF: Keeps track of latest state instantly ---
+  const gardenRef = useRef({
+    seedChosen: false,
+    selectedSeedIndex: 0,
+    dailyProgress: 0,
+    flowersBloomed: 0,
+    hasBloomedToday: false,
+    moodSubmittedDate: null,
+    journalWordsToday: 0,
+    wateringCountToday: 0
+  });
+
+  const updateState = (updates) => {
+    gardenRef.current = { ...gardenRef.current, ...updates };
+    if (updates.hasOwnProperty('seedChosen')) setSeedChosen(updates.seedChosen);
+    if (updates.hasOwnProperty('selectedSeedIndex')) setSelectedSeedIndex(updates.selectedSeedIndex);
+    if (updates.hasOwnProperty('dailyProgress')) setDailyProgress(updates.dailyProgress);
+    if (updates.hasOwnProperty('flowersBloomed')) setFlowersBloomed(updates.flowersBloomed);
+    if (updates.hasOwnProperty('hasBloomedToday')) setHasBloomedToday(updates.hasBloomedToday);
+    if (updates.hasOwnProperty('moodSubmittedDate')) setMoodSubmittedDate(updates.moodSubmittedDate);
+    if (updates.hasOwnProperty('journalWordsToday')) setJournalWordsToday(updates.journalWordsToday);
+    if (updates.hasOwnProperty('wateringCountToday')) setWateringCountToday(updates.wateringCountToday);
+  };
 
   function showToast(msg, ms = 2000) {
     setToastMsg(msg);
@@ -97,155 +116,210 @@ const navigate = useNavigate();
     toastTimer.current = setTimeout(() => setToastMsg(""), ms);
   }
 
+  function countWords(text) {
+    if (!text) return 0;
+    return text.trim().split(/\s+/).filter(Boolean).length;
+  }
+
+  // 1. LOAD DATA (FIXED: Includes Auto-Repair for missing seeds)
   useEffect(() => {
+    if (authLoading || !currentUser || !docPath) return;
+
     let mounted = true;
     async function load() {
       setLoading(true);
       try {
         const data = await fetchData(docPath);
+        
         if (mounted) {
-          if (data) {
-            setSeedChosen(!!data.seedChosen);
-            setSelectedSeedIndex(data.selectedSeedIndex ?? 0);
-            setDailyProgress(data.dailyProgress ?? 0);
-            setFlowersBloomed(data.flowersBloomed ?? 0);
-            setHasBloomedToday(
-              data.hasBloomedTodayDate === todayKey ? !!data.hasBloomedToday : false
-            );
-            setMoodSubmittedDate(data.moodSubmittedDate ?? null);
-            setJournalWordsToday(data.journalWordsToday ?? 0);
-            setWateringCountToday(data.wateringCountToday ?? 0);
-          } else {
-            setSeedChosen(false);
-            setSelectedSeedIndex(0);
-            setDailyProgress(0);
-            setFlowersBloomed(0);
-            setHasBloomedToday(false);
-            setMoodSubmittedDate(null);
-            setJournalWordsToday(0);
-            setWateringCountToday(0);
-          }
+            const safeData = data || {};
+            
+            // --- AUTO REPAIR LOGIC ---
+            // If we have progress (points or flowers) but 'seedChosen' is false/missing,
+            // we assume the seed was actually chosen (prevents the "Pick Seed" glitch).
+            const hasActivity = (safeData.dailyProgress > 0) || (safeData.flowersBloomed > 0);
+            const correctedSeedChosen = !!safeData.seedChosen || hasActivity;
+
+            const lastActive = safeData.lastActiveDate; 
+            const isNewDay = lastActive !== todayKey;
+
+            if (isNewDay) {
+                console.log("New day detected! Resetting daily counters.");
+                
+                const newState = {
+                    seedChosen: correctedSeedChosen, // Use corrected value
+                    selectedSeedIndex: safeData.selectedSeedIndex ?? 0,
+                    flowersBloomed: safeData.flowersBloomed ?? 0,
+                    // RESET DAILY ITEMS
+                    dailyProgress: 0,
+                    wateringCountToday: 0,
+                    journalWordsToday: 0,
+                    hasBloomedToday: false,
+                    moodSubmittedDate: safeData.moodSubmittedDate === todayKey ? safeData.moodSubmittedDate : null 
+                };
+
+                updateState(newState);
+
+                await writeData(docPath, {
+                    ...newState,
+                    lastActiveDate: todayKey,
+                    updatedAt: Date.now()
+                });
+
+            } else {
+                // SAME DAY: Load normally
+                updateState({
+                    seedChosen: correctedSeedChosen, // Use corrected value
+                    selectedSeedIndex: safeData.selectedSeedIndex ?? 0,
+                    dailyProgress: safeData.dailyProgress ?? 0,
+                    flowersBloomed: safeData.flowersBloomed ?? 0,
+                    hasBloomedToday: safeData.hasBloomedTodayDate === todayKey ? !!safeData.hasBloomedToday : false,
+                    moodSubmittedDate: safeData.moodSubmittedDate ?? null,
+                    journalWordsToday: safeData.journalWordsToday ?? 0,
+                    wateringCountToday: safeData.wateringCountToday ?? 0,
+                });
+            }
         }
       } catch (err) {
         console.error("Load garden error", err);
-        showToast("Unable to load garden (offline).");
       } finally {
         if (mounted) setLoading(false);
       }
     }
     load();
+    return () => { mounted = false; };
+  }, [docPath, authLoading, currentUser, todayKey]);
 
-    const timer = setInterval(() => {
-      const newWeek = getMondayDateKey();
-      const newToday = todayDateKey();
-      if (newWeek !== weekKey) setWeekKey(newWeek);
-      if (newToday !== todayKey) setTodayKey(newToday);
-    }, 30 * 1000);
+  // 2. PERSIST DATA
+  async function persist(explicitChanges = {}) {
+    if (!currentUser || !docPath) return;
 
-    return () => {
-      mounted = false;
-      clearInterval(timer);
-    };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [docPath]);
+    if (Object.keys(explicitChanges).length > 0) {
+        updateState(explicitChanges);
+    }
 
-  async function persist(changes = {}) {
+    const currentStats = gardenRef.current;
+
     const payload = {
-      seedChosen,
-      selectedSeedIndex,
-      dailyProgress,
-      flowersBloomed,
-      hasBloomedToday,
-      hasBloomedTodayDate: hasBloomedToday ? todayKey : null,
-      moodSubmittedDate,
-      journalWordsToday,
-      wateringCountToday,
+      seedChosen: currentStats.seedChosen,
+      selectedSeedIndex: currentStats.selectedSeedIndex,
+      flowersBloomed: currentStats.flowersBloomed,
+      dailyProgress: currentStats.dailyProgress,
+      hasBloomedToday: currentStats.hasBloomedToday,
+      hasBloomedTodayDate: currentStats.hasBloomedToday ? todayKey : null,
+      moodSubmittedDate: currentStats.moodSubmittedDate,
+      journalWordsToday: currentStats.journalWordsToday,
+      wateringCountToday: currentStats.wateringCountToday,
+      lastActiveDate: todayKey,
       updatedAt: Date.now(),
-      ...changes,
     };
+
     try {
       await writeData(docPath, payload);
     } catch (err) {
       console.warn("persist failed", err);
-      localStorage.setItem(`garden_${docPath}`, JSON.stringify(payload));
     }
   }
 
+  // --- AUTO RECOVERY for Bloom ---
+  useEffect(() => {
+    if (!loading && currentUser && dailyProgress >= MAX_DAILY_GROWTH && !hasBloomedToday) {
+      console.log("Auto-correcting: Progress is 100% but bloom not triggered.");
+      
+      const currentFlowers = gardenRef.current.flowersBloomed;
+      const newFlowerCount = currentFlowers < MAX_FLOWERS_PER_WEEK ? currentFlowers + 1 : currentFlowers;
+
+      updateState({
+          hasBloomedToday: true,
+          flowersBloomed: newFlowerCount
+      });
+      showToast("Flower restored! 🌸");
+
+      persist(); 
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [loading, currentUser, dailyProgress, hasBloomedToday]);
+
+  const handlePlantSeed = (index) => {
+    updateState({ 
+        seedChosen: true, 
+        selectedSeedIndex: index 
+    });
+    persist();
+  };
+
   function addProgressPoints(points) {
-    if (dailyProgress >= MAX_DAILY_GROWTH) {
+    const currentStats = gardenRef.current;
+
+    if (currentStats.dailyProgress >= MAX_DAILY_GROWTH && currentStats.hasBloomedToday) {
       showToast("You’ve helped your plant grow as much as it can today 🌱");
       return;
     }
-    const allowed = Math.min(MAX_DAILY_GROWTH - dailyProgress, points || 0);
-    const newProgress = Math.min(MAX_DAILY_GROWTH, dailyProgress + allowed);
-    setDailyProgress(newProgress);
 
-    // if reach 100/100 and not bloomed today:
-    if (newProgress >= MAX_DAILY_GROWTH && !hasBloomedToday) {
-      if (flowersBloomed < MAX_FLOWERS_PER_WEEK) {
-        // compute index of the new flower (0-based)
-        setFlowersBloomed((prev) => {
-          const newVal = prev + 1;
-          const newIndex = newVal - 1;
-          setLastBloomedIndex(newIndex);
-          // clear bloom marker after animation duration
-          setTimeout(() => setLastBloomedIndex(null), 900);
-          return newVal;
-        });
-      }
-      setHasBloomedToday(true);
-      showToast("A flower has bloomed today 🌸");
+    const allowed = Math.min(MAX_DAILY_GROWTH - currentStats.dailyProgress, points || 0);
+    const newProgress = Math.min(MAX_DAILY_GROWTH, currentStats.dailyProgress + (allowed > 0 ? allowed : 0));
+    
+    let bloomUpdates = {};
+
+    if (newProgress >= MAX_DAILY_GROWTH && !currentStats.hasBloomedToday) {
+        let newFlowerCount = currentStats.flowersBloomed;
+        
+        if (currentStats.flowersBloomed < MAX_FLOWERS_PER_WEEK) {
+            newFlowerCount = currentStats.flowersBloomed + 1;
+            setLastBloomedIndex(newFlowerCount - 1);
+            setTimeout(() => setLastBloomedIndex(null), 900);
+        }
+        
+        bloomUpdates = {
+            hasBloomedToday: true,
+            flowersBloomed: newFlowerCount
+        };
+        showToast("A flower has bloomed today 🌸");
     }
-    setTimeout(() => persist(), 0);
-  }
 
-  function chooseSeed(index = 0) {
-    setSeedChosen(true);
-    setSelectedSeedIndex(index % FLOWER_IMAGES.length);
-    setDailyProgress(0);
-    setFlowersBloomed(0);
-    setHasBloomedToday(false);
-    setMoodSubmittedDate(null);
-    setJournalWordsToday(0);
-    setWateringCountToday(0);
+    const updates = {
+        dailyProgress: newProgress,
+        ...bloomUpdates
+    };
+
+    updateState(updates);
     persist();
   }
 
   async function fertilizerChoose(mood) {
-    if (moodSubmittedDate === todayKey) {
+    if (gardenRef.current.moodSubmittedDate === todayKey) {
       showToast("Mood already submitted today.");
       setShowMoodModal(false);
       return;
     }
     const pts = MOOD_POINTS[mood] ?? 0;
-    setMoodSubmittedDate(todayKey);
+    
+    updateState({ moodSubmittedDate: todayKey });
     addProgressPoints(pts);
     setShowMoodModal(false);
 
     try {
-      await addMoodLog(uid, { emotion: mood, date: todayKey, note: "" });
+      await addMoodLog(currentUser.uid, { emotion: mood, date: todayKey, note: "" });
     } catch (err) {
       console.warn("addMoodLog failed", err);
     }
-    persist({ moodToday: mood, moodSubmittedDate: todayKey });
   }
 
   function waterPlant() {
-    if (wateringCountToday >= MAX_WATERING_COUNT) {
+    const currentWatering = gardenRef.current.wateringCountToday;
+
+    if (currentWatering >= MAX_WATERING_COUNT) {
       showToast("Watering limit reached for today.");
       return;
     }
-    const newCount = wateringCountToday + 1;
-    setWateringCountToday(newCount);
-    addProgressPoints(1);
-    persist({ wateringCountToday: newCount });
+    
+    const newCount = currentWatering + 1;
+    updateState({ wateringCountToday: newCount });
+    addProgressPoints(1); 
 
-    // Create multiple water droplets animation (5 droplets per watering)
     const baseId = Date.now();
     const dropletIds = Array.from({ length: 5 }, (_, i) => `${baseId}-${i}`);
     setWaterDroplets(prev => [...prev, ...dropletIds]);
-    
-    // Remove droplets after animation completes
     setTimeout(() => {
       setWaterDroplets(prev => prev.filter(id => !dropletIds.includes(id)));
     }, 1200);
@@ -254,84 +328,49 @@ const navigate = useNavigate();
   async function submitJournal(text) {
     const words = countWords(text);
     const journalPoints = Math.min(MAX_JOURNAL_POINTS, Math.floor(words / 20) * 5);
-    const newWords = (journalWordsToday || 0) + words;
-    setJournalWordsToday(newWords);
+    
+    const currentWords = gardenRef.current.journalWordsToday || 0;
+    const newWords = currentWords + words;
+    
+    updateState({ journalWordsToday: newWords });
     addProgressPoints(journalPoints);
+    
     setShowJournalModal(false);
     setJournalText("");
 
     try {
-      await addJournal(uid, { content: text, emotionTag: "", date: todayKey });
+      await addJournal(currentUser.uid, { content: text, emotionTag: "", date: todayKey });
     } catch (err) {
       console.warn("addJournal failed", err);
     }
-    persist({ journalWordsToday: newWords });
   }
 
-  function countWords(text) {
-    if (!text) return 0;
-    return text.trim().split(/\s+/).filter(Boolean).length;
+  if (authLoading) return <div className="loading-container">Verifying identity...</div>;
+  if (!currentUser) {
+    return (
+      <div className="moodgarden-wrap">
+        <NavigationButtons />
+        <div className="error-container" style={{ padding: '20px', textAlign: 'center', marginTop: '50px' }}>
+          <h2>Access Denied</h2>
+          <p>Please log in to access your Mood Garden.</p>
+          <button style={{ padding: '10px 20px', fontSize: '16px' }} onClick={() => navigate('/login')}>Go to Login</button>
+        </div>
+      </div>
+    );
   }
-
-  useEffect(() => {
-    setDailyProgress(0);
-    setHasBloomedToday(false);
-    setMoodSubmittedDate(null);
-    setJournalWordsToday(0);
-    setWateringCountToday(0);
-    persist();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [todayKey]);
-
-  useEffect(() => {
-    async function archiveAndReset() {
-      const now = new Date();
-      const prevWeekDate = new Date(now.getTime() - 7 * 24 * 3600 * 1000);
-      const prevWeekKey = getMondayDateKey(prevWeekDate);
-      const prevPath = `GardenProgress/${uid}/${prevWeekKey}`;
-      try {
-        const prevData = await fetchData(prevPath);
-        if (prevData && (prevData.flowersBloomed || 0) > 0) {
-          await writeData(`FlowerHouse/${uid}/${prevWeekKey}`, {
-            flowers: prevData.flowersBloomed || 0,
-            selectedSeedIndex: prevData.selectedSeedIndex ?? 0,
-            savedAt: Date.now(),
-          });
-        }
-      } catch (err) {
-        console.warn("Archive previous week failed", err);
-      }
-
-      setSeedChosen(false);
-      setSelectedSeedIndex(0);
-      setDailyProgress(0);
-      setFlowersBloomed(0);
-      setHasBloomedToday(false);
-      setMoodSubmittedDate(null);
-      setJournalWordsToday(0);
-      setWateringCountToday(0);
-      persist();
-    }
-    archiveAndReset();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [weekKey]);
+  if (loading) return <div className="loading-container">Loading Garden...</div>;
 
   const flowerPositions = [
-    { left: "50%", bottom: "80%" },
-    { left: "40%", bottom: "85%" },
-    { left: "60%", bottom: "90%" },
-    { left: "50%", bottom: "95%" },
-    { left: "40%", bottom: "100%" },
-    { left: "55%", bottom: "110%" },
+    { left: "50%", bottom: "80%" }, { left: "40%", bottom: "85%" },
+    { left: "60%", bottom: "90%" }, { left: "50%", bottom: "95%" },
+    { left: "40%", bottom: "100%" }, { left: "55%", bottom: "110%" },
     { left: "60%", bottom: "120%" },
   ];
 
   return (
     <div className="moodgarden-wrap">
       <NavigationButtons />
-
       <div className="top-nav-spacer" />
-
       <div className="top-row">
         <div style={{ display: "flex", flexDirection: "column", gap: "8px" }}>
           <button className="top-btn" onClick={() => setShowMoodModal(true)}>
@@ -343,18 +382,13 @@ const navigate = useNavigate();
             <div>Water</div>
           </button>
         </div>
-
         <div className="top-row-spacer" />
-
         <div style={{ display: "flex", flexDirection: "column", gap: "8px" }}>
           <button className="top-btn" onClick={() => navigate('/journal')}>
             <img src={journalIcon} alt="journal" />
             <div>Journal</div>
           </button>
-          <button
-            className="flowerhouse-main-btn"
-            onClick={() => navigate('/flower-house')}
-          >
+          <button className="flowerhouse-main-btn" onClick={() => navigate('/flower-house')}>
             <img src={flowerHouseIcon} alt="flowerhouse" />
             <div>Flower House</div>
           </button>
@@ -366,46 +400,28 @@ const navigate = useNavigate();
           <div className="garden-center-mini">
             <img src={potImg} alt="Pot" className="pot-image" />
             {seedChosen && <img src={Plants} alt="stem" className="stem-image" />}
-
-            {/* Water droplets animation */}
+            
             {waterDroplets.map((dropletId, index) => (
-              <div
-                key={dropletId}
-                className="water-droplet animate"
-                style={{
-                  left: `${40 + (index % 5) * 8}%`,
-                  top: `${10 + (index % 3) * 5}%`,
-                }}
-              />
+              <div key={dropletId} className="water-droplet animate" style={{ left: `${40 + (index % 5) * 8}%`, top: `${10 + (index % 3) * 5}%` }} />
             ))}
 
             {Array.from({ length: flowersBloomed }).map((_, i) => {
               const src = FLOWER_IMAGES[selectedSeedIndex % FLOWER_IMAGES.length];
               const pos = flowerPositions[i] || flowerPositions[0];
               return (
-                <img
-                  key={i}
-                  src={src}
-                  className={`flower-image ${i === lastBloomedIndex ? "bloom" : ""}`}
-                  alt={`flower-${i}`}
-                  style={{
-                    left: pos.left,
-                    bottom: pos.bottom,
-                    transform: "translateX(-50%)",
-                  }}
-                />
+                <img key={i} src={src} className={`flower-image ${i === lastBloomedIndex ? "bloom" : ""}`} alt={`flower-${i}`} style={{ left: pos.left, bottom: pos.bottom, transform: "translateX(-50%)" }} />
               );
             })}
 
             {!seedChosen && (
               <div className="seed-picker-compact">
-                <div className="seed-label">Pick a seed</div>
+                <div className="seed-label">Pick a seed to plant</div>
                 <div className="seed-list-compact">
                   {FLOWER_IMAGES.map((img, idx) => (
-                    <button
-                      key={idx}
-                      className="seed-select-compact"
-                      onClick={() => chooseSeed(idx)}
+                    <button 
+                      key={idx} 
+                      className="seed-select-compact" 
+                      onClick={() => handlePlantSeed(idx)}
                     >
                       <img src={img} alt={`seed-${idx}`} className="seed-thumb-compact" />
                     </button>
@@ -418,49 +434,10 @@ const navigate = useNavigate();
       </div>
 
       <div className="bottom-row">
-        <div className="progress-bar-outer">
-          <div className="progress-fill" style={{ width: `${dailyProgress}%` }} />
-        </div>
+        <div className="progress-bar-outer"><div className="progress-fill" style={{ width: `${dailyProgress}%` }} /></div>
         <div className="progress-text">{dailyProgress}/100</div>
-        <button className="info-btn" onClick={() => setShowInfoModal(true)}>
-          ?
-        </button>
+        <button className="info-btn" onClick={() => setShowInfoModal(true)}>?</button>
       </div>
-
-      {showMoodModal && (
-        <div className="modal-overlay" onClick={() => setShowMoodModal(false)}>
-          <div className="modal-body" onClick={(e) => e.stopPropagation()}>
-            <h3>Choose today's mood</h3>
-            <div className="mood-grid">
-              {Object.keys(MOOD_POINTS).map((mood) => (
-                <button key={mood} className="mood-btn" onClick={() => fertilizerChoose(mood)}>
-                  <div className="mood-emoji">
-                    {mood === "happy" ? "😊" : mood === "calm" ? "😌" : mood === "anxious" ? "😰" : mood === "angry" ? "😠" : "😢"}
-                  </div>
-                  <div className="mood-label">{mood}</div>
-                </button>
-              ))}
-            </div>
-            <div className="modal-actions">
-              <button onClick={() => setShowMoodModal(false)}>Cancel</button>
-            </div>
-          </div>
-        </div>
-      )}
-
-      {showJournalModal && (
-        <div className="modal-overlay" onClick={() => setShowJournalModal(false)}>
-          <div className="modal-body" onClick={(e) => e.stopPropagation()}>
-            <h3>Write a journal entry</h3>
-            <textarea rows={6} placeholder="Write at least 20 words for small growth..." value={journalText} onChange={(e) => setJournalText(e.target.value)} />
-            <div className="word-count">{countWords(journalText)} words (Every 20 words → +5 points, max +30)</div>
-            <div className="modal-actions">
-              <button onClick={() => submitJournal(journalText)}>Save</button>
-              <button onClick={() => setShowJournalModal(false)}>Cancel</button>
-            </div>
-          </div>
-        </div>
-      )}
 
       {showInfoModal && (
         <div className="modal-overlay" onClick={() => setShowInfoModal(false)}>
@@ -479,6 +456,23 @@ const navigate = useNavigate();
         </div>
       )}
 
+      {showMoodModal && (
+        <div className="modal-overlay" onClick={() => setShowMoodModal(false)}>
+          <div className="modal-body" onClick={(e) => e.stopPropagation()}>
+            <h3>Choose today's mood</h3>
+            <div className="mood-grid">
+              {Object.keys(MOOD_POINTS).map((mood) => (
+                <button key={mood} className="mood-btn" onClick={() => fertilizerChoose(mood)}>
+                  <div className="mood-emoji">{mood === "happy" ? "😊" : mood === "calm" ? "😌" : mood === "anxious" ? "😰" : mood === "angry" ? "😠" : "😢"}</div>
+                  <div className="mood-label">{mood}</div>
+                </button>
+              ))}
+            </div>
+            <div className="modal-actions"><button onClick={() => setShowMoodModal(false)}>Cancel</button></div>
+          </div>
+        </div>
+      )}
+      
       {toastMsg && <div className="toast">{toastMsg}</div>}
     </div>
   );

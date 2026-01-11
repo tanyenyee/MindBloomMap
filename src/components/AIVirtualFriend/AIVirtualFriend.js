@@ -11,18 +11,27 @@ import trashIcon from '../../assets/images/trash_button.png';
 import Dialog from '../UI/Dialog';
 import './AIVirtualFriend.css';
 
+// --- CONSTANT: Standard Welcome Message ---
+const WELCOME_MSG = {
+  message: "Hi! I'm your virtual friend. I'm here to listen and support you. How are you feeling today?",
+  sender: 'ai',
+  timestamp: Date.now(),
+};
+
 const AIVirtualFriend = () => {
-  const { user } = useAuth();
+  const { user, loading: authLoading } = useAuth();
   const navigate = useNavigate();
   const { showToast } = useToast();
-  const [messages, setMessages] = useState([]);
+  
+  // FIX: Start with the Welcome Message by default. 
+  // This ensures the screen is never empty.
+  const [messages, setMessages] = useState([WELCOME_MSG]);
   const [input, setInput] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [isLoadingHistory, setIsLoadingHistory] = useState(true);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const messagesEndRef = useRef(null);
 
-  // Auto-scroll to bottom when new messages arrive
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
   };
@@ -31,37 +40,45 @@ const AIVirtualFriend = () => {
     scrollToBottom();
   }, [messages]);
 
-  // Load chat history from Firebase on mount
+  // --- HISTORY LOADING LOGIC ---
   useEffect(() => {
+    // 1. Wait for Auth Check
+    if (authLoading) return;
+
+    // 2. If Guest/Not Logged In, stop loading (Default greeting stays)
+    if (!user) {
+      setIsLoadingHistory(false);
+      return;
+    }
+
     const loadHistory = async () => {
-      if (!user) return;
-      
       try {
         const history = await getChatHistory(user.uid);
-        if (history.length > 0) {
+        
+        if (history && history.length > 0) {
+          // Case A: User has history -> Overwrite the default greeting
           setMessages(history);
-          // Load history into Gemini service for context
           loadConversationHistory(history);
         } else {
-          // Initialize with welcome message
+          // Case B: No history -> The default [WELCOME_MSG] is already there.
+          // We just ensure the AI service is ready and save this start to DB.
           initializeConversation();
-          const welcomeMessage = {
-            message: "Hi! I'm your virtual friend. I'm here to listen and support you. How are you feeling today?",
-            sender: 'ai',
-            timestamp: Date.now(),
-          };
-          setMessages([welcomeMessage]);
-          await addChatMessage(user.uid, welcomeMessage);
+          
+          // Save the welcome message to Firebase silently (don't await/block UI)
+          addChatMessage(user.uid, WELCOME_MSG).catch(err => 
+            console.warn("Background save failed:", err)
+          );
         }
       } catch (error) {
         console.error('Error loading chat history:', error);
+        // On error, we just keep the default [WELCOME_MSG] so the user can still chat.
       } finally {
         setIsLoadingHistory(false);
       }
     };
 
     loadHistory();
-  }, [user]);
+  }, [user, authLoading]);
 
   // Handle sending message
   const handleSend = async () => {
@@ -73,16 +90,15 @@ const AIVirtualFriend = () => {
       timestamp: Date.now(),
     };
 
-    // Add user message to UI
     setMessages(prev => [...prev, userMessage]);
     setInput('');
     setIsLoading(true);
 
     try {
-      // Save user message to Firebase
-      await addChatMessage(user.uid, userMessage);
+      if (user) {
+        await addChatMessage(user.uid, userMessage);
+      }
 
-      // Get AI response
       const aiResponse = await sendMessage(userMessage.message);
 
       const aiMessage = {
@@ -91,11 +107,11 @@ const AIVirtualFriend = () => {
         timestamp: Date.now(),
       };
 
-      // Add AI message to UI
       setMessages(prev => [...prev, aiMessage]);
 
-      // Save AI message to Firebase
-      await addChatMessage(user.uid, aiMessage);
+      if (user) {
+        await addChatMessage(user.uid, aiMessage);
+      }
     } catch (error) {
       console.error('Error sending message:', error);
       const errorMessage = {
@@ -109,7 +125,6 @@ const AIVirtualFriend = () => {
     }
   };
 
-  // Handle Enter key press
   const handleKeyPress = (e) => {
     if (e.key === 'Enter' && !e.shiftKey) {
       e.preventDefault();
@@ -117,7 +132,6 @@ const AIVirtualFriend = () => {
     }
   };
 
-  // Handle clear chat history
   const handleClearChat = () => {
     setIsDialogOpen(true);
   };
@@ -126,22 +140,18 @@ const AIVirtualFriend = () => {
     setIsDialogOpen(false);
 
     try {
-      // Clear from Firebase - delete all messages
-      const messagesRef = ref(db, `ChatMessages/${user.uid}`);
-      await remove(messagesRef);
+      if (user) {
+        const messagesRef = ref(db, `ChatMessages/${user.uid}`);
+        await remove(messagesRef);
+      }
 
-      // Reset local state
-      setMessages([]);
-      
-      // Reinitialize conversation with welcome message
+      // Reset to Welcome Message
+      setMessages([WELCOME_MSG]);
       initializeConversation();
-      const welcomeMessage = {
-        message: "Hi! I'm your virtual friend. I'm here to listen and support you. How are you feeling today?",
-        sender: 'ai',
-        timestamp: Date.now(),
-      };
-      setMessages([welcomeMessage]);
-      await addChatMessage(user.uid, welcomeMessage);
+      
+      if (user) {
+        await addChatMessage(user.uid, WELCOME_MSG);
+      }
 
       showToast('Chat history cleared successfully', 'success');
     } catch (error) {
@@ -150,7 +160,6 @@ const AIVirtualFriend = () => {
     }
   };
 
-  // Parse message text and convert keywords to clickable links
   const renderMessageWithLinks = (text) => {
     const keywords = {
       volcano: '/volcano',
@@ -163,13 +172,11 @@ const AIVirtualFriend = () => {
     const parts = [];
     let lastIndex = 0;
 
-    // Find all keyword matches
     Object.entries(keywords).forEach(([keyword, path]) => {
       const regex = new RegExp(`\\b${keyword}\\b`, 'gi');
       let match;
 
       while ((match = regex.exec(text)) !== null) {
-        // Add text before match
         if (match.index > lastIndex) {
           parts.push({
             type: 'text',
@@ -177,7 +184,6 @@ const AIVirtualFriend = () => {
           });
         }
 
-        // Add link
         parts.push({
           type: 'link',
           content: match[0],
@@ -188,7 +194,6 @@ const AIVirtualFriend = () => {
       }
     });
 
-    // Add remaining text
     if (lastIndex < text.length) {
       parts.push({
         type: 'text',
@@ -196,12 +201,10 @@ const AIVirtualFriend = () => {
       });
     }
 
-    // If no links found, return original text
     if (parts.length === 0) {
       return text;
     }
 
-    // Render parts with links
     return parts.map((part, index) => {
       if (part.type === 'link') {
         return (
@@ -218,7 +221,8 @@ const AIVirtualFriend = () => {
     });
   };
 
-  if (isLoadingHistory) {
+  // Only block UI if we are waiting for Auth or History
+  if (isLoadingHistory || authLoading) {
     return (
       <div className="ai-friend-container">
         <div className="loading-screen">
@@ -232,7 +236,6 @@ const AIVirtualFriend = () => {
     <div className="ai-friend-container">
       
       <div className="content-wrapper">
-        {/* Header */}
         <div className="chat-header">
           <button className="back-button" onClick={() => navigate('/self-care')}>
             <IoArrowBack size={24} />
@@ -243,7 +246,6 @@ const AIVirtualFriend = () => {
           </button>
         </div>
 
-        {/* Messages Area */}
         <div className="messages-area">
           {messages.map((msg, index) => (
             <div
@@ -273,7 +275,6 @@ const AIVirtualFriend = () => {
           <div ref={messagesEndRef} />
         </div>
 
-        {/* Input Area */}
         <div className="input-area">
           <input
             type="text"
@@ -293,7 +294,6 @@ const AIVirtualFriend = () => {
           </button>
         </div>
 
-        {/* Confirmation Dialog */}
         <Dialog
           isOpen={isDialogOpen}
           onClose={() => setIsDialogOpen(false)}

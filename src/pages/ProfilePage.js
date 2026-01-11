@@ -5,21 +5,23 @@ import NavigationButtons from '../components/NavigationButtons';
 import '../styles/PageContainer.css';
 import '../pages/ProfilePage.css'; 
 
-// Placeholder icons (Keep your existing imports)
+// Assets
 import penIcon from '../assets/images/pen.png';
 import emergencyIcon from '../assets/images/emergency.png';
 import logoutIcon from '../assets/images/logout.png';
 import bgImg from '../assets/images/profile_background.png';
 import profilePic from '../assets/images/profilepic.png';
+
+// Context & Service
 import { useAuth } from '../context/AuthContext';
-import { getUser } from '../firebases/firebaseService';
+// FIX: Import updateUser
+import { getUser, updateUser } from '../firebases/firebaseService'; 
 
 const ProfilePage = () => {
   const navigate = useNavigate();
-  const { user: authUser, setUser } = useAuth();
+  const { currentUser } = useAuth(); 
   const fileInputRef = useRef(null);
 
-  // --- Main User State ---
   const [profileData, setProfileData] = useState({
     name: "",
     phone: "",
@@ -27,32 +29,27 @@ const ProfilePage = () => {
     avatar: profilePic
   });
 
-  // --- Loading State ---
   const [isLoading, setIsLoading] = useState(true);
-
-  // --- Modal States ---
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [tempName, setTempName] = useState("");
   const [tempAvatar, setTempAvatar] = useState("");
   const [selectedFile, setSelectedFile] = useState(null); 
 
-  // Fetch user data from Firebase on mount
   useEffect(() => {
     const fetchUserData = async () => {
       try {
-        if (!authUser || !authUser.uid) {
-          console.error("User not authenticated");
-          return;
+        if (!currentUser || !currentUser.uid) {
+           setIsLoading(false);
+           return;
         }
 
-        // Fetch user data from Firebase
-        const dbUser = await getUser(authUser.uid);
+        const dbUser = await getUser(currentUser.uid);
 
         if (dbUser) {
           setProfileData({
             name: dbUser.username || "",
             phone: dbUser.phone || "",
-            email: dbUser.email || authUser.email || "",
+            email: dbUser.email || currentUser.email || "",
             avatar: dbUser.avatar || profilePic
           });
         }
@@ -64,11 +61,10 @@ const ProfilePage = () => {
     };
 
     fetchUserData();
-  }, [authUser]);
+  }, [currentUser]);
 
   // --- Handlers ---
 
-  // 1. Open Edit Window
   const openEditModal = () => {
     setTempName(profileData.name);
     setTempAvatar(profileData.avatar);
@@ -76,7 +72,6 @@ const ProfilePage = () => {
     setIsEditModalOpen(true);
   };
 
-  // 2. Handle File Selection (Updates Preview Immediately)
   const handleImageClick = () => {
     fileInputRef.current.click();
   };
@@ -84,34 +79,47 @@ const ProfilePage = () => {
   const handleFileChange = (event) => {
     if (event.target.files && event.target.files.length > 0) {
       const file = event.target.files[0];
-      
-      // Create a temporary URL for the preview
       const imageUrl = URL.createObjectURL(file);
       setTempAvatar(imageUrl);
       setSelectedFile(file); 
     }
   };
 
-  // 3. Save Final Changes (The "Done" Action)
-  const handleDone = () => {
-    setProfileData({ ...profileData, name: tempName, avatar: tempAvatar });
-    setIsEditModalOpen(false);
-    
-    // TODO: Upload 'selectedFile' to Firebase Storage here if it exists
-    // TODO: Update Name in Firebase Database here
+  // --- FIX: HANDLE DONE (Update Username) ---
+  const handleDone = async () => {
+    if (!currentUser || !currentUser.uid) return;
+
+    try {
+      // 1. Update in Firebase
+      await updateUser(currentUser.uid, {
+        username: tempName,
+        // TODO: Handle avatar upload to storage if selectedFile is present
+        // avatar: newAvatarUrl 
+      });
+
+      // 2. Update Local State
+      setProfileData(prev => ({
+        ...prev,
+        name: tempName,
+        avatar: tempAvatar // For now, just update preview locally
+      }));
+
+      setIsEditModalOpen(false);
+      alert("Profile updated successfully!");
+
+    } catch (error) {
+      console.error("Error updating profile:", error);
+      alert("Failed to update profile. Please try again.");
+    }
   };
 
-  // Handle Logout
   const handleLogout = async () => {
     try {
       const auth = getAuth();
       await signOut(auth);
-      
-      // Clear user from AuthContext
-      setUser(null);
-      
       navigate("/login", { replace: true });
     } catch (error) {
+      console.error("Logout Error:", error);
       alert("Logout failed: " + error.message);
     }
   };
@@ -120,10 +128,8 @@ const ProfilePage = () => {
     return (
       <div className="page-container profile-page">
         <NavigationButtons />
-        <div className="page-content">
-          <div style={{ textAlign: 'center', marginTop: '100px' }}>
-            <p>Loading profile...</p>
-          </div>
+        <div className="page-content" style={{ display:'flex', justifyContent:'center', paddingTop:'100px' }}>
+          <p>Loading profile...</p>
         </div>
       </div>
     );
@@ -131,15 +137,12 @@ const ProfilePage = () => {
 
   return (
     <div className="page-container profile-page">
-      {/* Navigation is now safely INSIDE the container */}
       <NavigationButtons />
-      
-      {<img src={bgImg} alt="Profile Background" className="profile-bg" /> }
+      <img src={bgImg} alt="Profile Background" className="profile-bg" />
 
       <div className="page-content">
         <div className="profile-wrapper">
           
-          {/* --- Main Profile Display --- */}
           <div className="avatar-section">
             <div className="avatar-container">
               <img src={profileData.avatar} alt="Profile" className="profile-pic" />
@@ -186,7 +189,6 @@ const ProfilePage = () => {
         </div>
       </div>
 
-      {/* --- EDIT PROFILE POP-UP WINDOW --- */}
       {isEditModalOpen && (
         <div className="modal-overlay">
           <div className="modal-content">
@@ -196,15 +198,11 @@ const ProfilePage = () => {
             </div>
             
             <div className="modal-body">
-              
-              {/* Avatar Preview Section */}
               <div className="avatar-edit-wrapper">
                 <div className="preview-container">
                     <img src={tempAvatar} alt="Preview" className="profile-pic-preview" />
                 </div>
                 <button className="change-photo-btn" onClick={handleImageClick}>Change Photo</button>
-                
-                {/* Hidden File Input */}
                 <input 
                   type="file" 
                   ref={fileInputRef} 
@@ -214,7 +212,6 @@ const ProfilePage = () => {
                 />
               </div>
 
-              {/* Name Edit Section */}
               <div className="input-group">
                 <label>Display Name</label>
                 <input 
@@ -226,14 +223,12 @@ const ProfilePage = () => {
               </div>
             </div>
 
-            {/* DONE BUTTON */}
             <div className="modal-footer">
               <button className="save-btn full-width" onClick={handleDone}>Done</button>
             </div>
           </div>
         </div>
       )}
-
     </div>
   );
 };

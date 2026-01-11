@@ -11,25 +11,24 @@ import btnWrite from '../assets/images/btn-write.png';
 // Import Navigation Component
 import NavigationButtons from './NavigationButtons';
 
-export default function CommunityMap({ onViewMore, onGoToWritePost, onGoToMyPosts , onRefresh }) {
+export default function CommunityMap({ onViewMore, onGoToWritePost, onGoToMyPosts }) {
   const [selectedPost, setSelectedPost] = useState(null);
-  
   // Shuffle function to randomize posts
-  const shuffleArray = (array) => {
-    const shuffled = [...array];
-    for (let i = shuffled.length - 1; i > 0; i--) {
-      const j = Math.floor(Math.random() * (i + 1));
-      [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
-    }
-    return shuffled;
-  };
+const shuffleArray = (array) => {
+  const shuffled = [... array];
+  for (let i = shuffled.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
+  }
+  return shuffled;
+};
 
-  // Shuffle posts on component mount (every refresh)
-  const [posts] = useState(() => shuffleArray(postsData));
+// Shuffle posts on component mount (every refresh)
+const [posts] = useState(() => shuffleArray(postsData));
   console.log('Total posts:', posts.length); 
 
   const handleIslandClick = (post) => {
-    console.log('Island clicked:', post.title);
+    console.log('Island clicked:', post. title);
     setSelectedPost(post);
   };
 
@@ -38,23 +37,18 @@ export default function CommunityMap({ onViewMore, onGoToWritePost, onGoToMyPost
   };
 
   const handleRefresh = () => {
-    console.log('Refresh button clicked');
-    if (onRefresh) {
-      onRefresh();
-    } else {
-      window.location.reload();
-    }
+    window.location.reload();
   };
 
-  const islandPositions = [
-    { top: '5%', left: '15%' },
-    { top: '8%', left: '65%' },
-    { top: '20%', left: '40%' },
-    { top: '28%', left: '8%' },
-    { top: '35%', left: '55%' },
-    { top: '53%', left: '68%' },
-    { top: '68%', left: '53%' },
-  ];
+const islandPositions = [
+  { top: '5%', left: '15%' },     // Island 1 - Top-left
+  { top: '8%', left: '65%' },     // Island 2 - Top-right
+  { top: '20%', left: '40%' },    // Island 3 - Upper-center
+  { top: '28%', left: '8%' },    // Island 4 - Middle-left
+  { top: '35%', left: '55%' },    // Island 5 - Middle-right
+  { top: '53%', left: '68%' },    // Island 6 - Lower-center
+  { top: '68%', left: '53%' },    // Island 7 - Bottom-right
+];
 
   return (
     <div className="ocean-map-mobile-temp">
@@ -71,37 +65,37 @@ export default function CommunityMap({ onViewMore, onGoToWritePost, onGoToMyPost
 
       {/* Clickable islands */}
       <div className="islands-layer">
-        {posts && posts.slice(0, 7).map((post, index) => {
-          console.log(`Island ${index + 1}: `, islandPositions[index]);
-          return (
-            <button
-              key={post.id}
-              className="island-button-temp"
-              style={{
-                top: islandPositions[index].top,
-                left: islandPositions[index].left,
-              }}
-              onClick={(e) => {
-                e.preventDefault();
-                e.stopPropagation();
-                handleIslandClick(post);
-              }}
-              type="button"
-              aria-label={`View post: ${post.title}`}
-            >
-              <img 
-                src={islandPost} 
-                alt={`island ${index + 1}`}
-                className="island-img-temp"
-                style={{ 
-                  pointerEvents: 'none',
-                  width: '120px',
-                  height: '120px',
-                }}
-              />
-            </button>
-          );
-        })}
+{posts && posts.slice(0, 7).map((post, index) => {
+  console.log(`Island ${index + 1}: `, islandPositions[index]);  // ← ADD THIS
+  return (
+    <button
+      key={post.id}
+      className="island-button-temp"
+      style={{
+        top: islandPositions[index].top,
+        left: islandPositions[index].left,
+      }}
+      onClick={(e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        handleIslandClick(post);
+      }}
+      type="button"
+      aria-label={`View post: ${post.title}`}
+    >
+<img 
+  src={islandPost} 
+  alt={`island ${index + 1}`}
+  className="island-img-temp"
+  style={{ 
+    pointerEvents: 'none',
+    width: '120px',      /* ← ADD YOUR SIZE HERE */
+    height: '120px',     /* ← ADD YOUR SIZE HERE */
+  }}
+/>
+    </button>
+  );
+})}
       </div>
 
 
@@ -122,11 +116,7 @@ export default function CommunityMap({ onViewMore, onGoToWritePost, onGoToMyPost
 }}>
   {/* Refresh Button - LEFT SIDE */}
   <button 
-    onClick={(e) => {
-            e.preventDefault();
-            e.stopPropagation();
-            handleRefresh();
-          }}
+    onClick={handleRefresh}
     type="button"
     title="Refresh"
     style={{
@@ -219,6 +209,46 @@ export default function CommunityMap({ onViewMore, onGoToWritePost, onGoToMyPost
     />
   </button>
 </div>
+
+      {/* My Posts Button - Bottom Right */}
+      <button 
+        onClick={onGoToMyPosts}
+        type="button"
+        title="My Posts"
+        style={{
+          position: 'absolute',
+          bottom: '20px',
+          right: '20px',
+          width: '70px',
+          height: '70px',
+          background: 'transparent',
+          border: 'none',
+          padding: 0,
+          cursor: 'pointer',
+          transition: 'transform 0.2s ease',
+          zIndex: 50,
+        }}
+        onMouseEnter={(e) => {
+          e.currentTarget.style.transform = 'scale(1.1)';
+        }}
+        onMouseLeave={(e) => {
+          e.currentTarget.style.transform = 'scale(1)';
+        }}
+      >
+        <div style={{
+          width: '100%',
+          height: '100%',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          background: 'linear-gradient(135deg, #FFD47F 0%, #FFAD4F 100%)',
+          borderRadius: '50%',
+          boxShadow: '0 4px 8px rgba(0, 0, 0, 0.3)',
+          fontSize: '36px',
+        }}>
+          📝
+        </div>
+      </button>
 
       {/* Post preview modal */}
       {selectedPost && (
