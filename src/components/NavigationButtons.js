@@ -1,14 +1,28 @@
 import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import threebirdsImg from '../assets/images/buttons_threebirds.png';
 
 const NavigationButtons = () => {
   const navigate = useNavigate();
+  const location = useLocation();
   const [pressed, setPressed] = useState({});
 
+  // Pages that should not use back button history navigation
+  const noBackPages = ['/login', '/register', '/splash'];
+
+  const handleBack = () => {
+    // If on login, register, or splash pages, go to main instead of back
+    if (noBackPages.includes(location.pathname)) {
+      navigate('/main');
+    } else {
+      // For other pages, try to go back
+      navigate(-1);
+    }
+  };
+
   const buttons = [
-    { alt: 'Back', onClick: () => navigate(-1), title: 'Go back to previous page' },
-    { alt: 'Main Page', onClick: () => navigate('/main', { replace: true }), title: 'Return to main page' },
+    { alt: 'Back', onClick: handleBack, title: 'Go back to previous page' },
+    { alt: 'Main Page', onClick: () => navigate('/main'), title: 'Return to main page' },
     { alt: 'Profile Page', onClick: () => navigate('/profile'), title: 'Go to profile page' },
   ];
 
