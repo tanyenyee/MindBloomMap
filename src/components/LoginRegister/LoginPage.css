@@ -75,3 +75,17 @@
 .login-page-container button::after{
   background-color: black;
 }
+
+/* Mobile Responsive */
+@media (max-width: 420px) {
+  .login-page-container {
+    position: relative;
+    left: 0;
+    top: 0;
+    transform: none;
+    width: 100vw;
+    height: 100vh;
+    border-radius: 0;
+    box-shadow: none;
+  }
+}

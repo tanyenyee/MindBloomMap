@@ -241,3 +241,17 @@
     transform: translateY(100px) scale(0.2);
   }
 }
+
+/* Mobile Responsive */
+@media (max-width: 420px) {
+  .moodgarden-wrap {
+    position: relative;
+    left: 0;
+    top: 0;
+    transform: none;
+    width: 100vw;
+    height: 100vh;
+    border-radius: 0;
+    box-shadow: none;
+  }
+}
