@@ -83,23 +83,23 @@
 /* --- Name & Info Styling --- */
 .name-section { margin: 20px 0; }
 .name-display { display: flex; align-items: center; justify-content: center; gap: 10px;}
-.name-display h2 { margin: 0; font-size: 1.5rem; }
+.name-display h2 { margin: 0; font-size: 1.5rem; font-family: 'Comic Sans MS', 'Chalkboard SE', sans-serif; }
 .edit-icon-btn { background: none; border: none; font-size: 1.2rem; cursor: pointer; }
 
 .info-section { text-align: left; padding: 0 10px; margin-top: 30px; }
-.info-row { display: flex; justify-content: space-between; margin-bottom: 12px; font-size: 1rem; }
-.label { color: #555; }
-.value { font-weight: 600; color: #333; }
+.info-row { display: flex; justify-content: space-between; margin-bottom: 12px; font-size: 1rem; font-family: 'Comic Sans MS', 'Chalkboard SE', sans-serif; }
+.label { color: #555; font-family: 'Comic Sans MS', 'Chalkboard SE', sans-serif; }
+.value { font-weight: 600; color: #333; font-family: 'Comic Sans MS', 'Chalkboard SE', sans-serif; }
 .divider { border: 0; border-top: 2px solid #eee; margin: 20px 0; }
 
 /* --- Action Buttons --- */
 .action-button {
   display: flex; align-items: center; gap: 15px; padding: 12px;
-  cursor: pointer; border-radius: 8px; transition: background 0.2s;
+  cursor: pointer; border-radius: 8px; transition: background 0.2s; font-family: 'Comic Sans MS', 'Chalkboard SE', sans-serif;
 }
 .action-button:hover { background-color: #f7f7f7; }
 .icon-wrapper { font-size: 1.8rem; width: 40px; text-align: center; }
-.text-wrapper h3 { margin: 0; font-size: 1rem; color: #000; text-align: left; }
+.text-wrapper h3 { margin: 0; font-size: 1rem; color: #000; text-align: left; font-family: 'Comic Sans MS', 'Chalkboard SE', sans-serif; }
 
 /* Make icons ~3x smaller */
 .edit-icon { width: 16px; height: 16px; }
