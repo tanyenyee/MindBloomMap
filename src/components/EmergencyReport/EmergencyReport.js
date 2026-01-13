@@ -242,7 +242,7 @@ const EmergencyReport = () => {
   );
 };
 
-const customFont = "'Comic Sans MS', 'Chalkboard SE', 'Comic Neue', cursive";
+const customFont = "'Comic Sans MS', 'Chalkboard SE', sans-serif";
 
 const styles = {
   pageWrapper: { 
