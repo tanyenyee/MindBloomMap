@@ -207,7 +207,11 @@ const FlowerHouse = () => {
     const viewMonthlySummary = () => setActiveSummary('monthly');
     const handleFlowerClick = (weekObject) => setSelectedWeekLogs(weekObject);
 
-    if (loading || isFetchingData) return <div className="flowerhouse-container">Loading your Garden...</div>;
+    if (loading || isFetchingData) return (
+      <div className="flowerhouse-loading">
+        <div className="flowerhouse-loading-content">Loading your Garden...</div>
+      </div>
+    );
 
     return (
         <div className="flowerhouse-container" style={{ backgroundImage: `url(${FlowerHouseBG})`, backgroundSize: 'cover', backgroundAttachment: 'fixed' }}>

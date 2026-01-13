@@ -1,15 +1,22 @@
 .volcano-container {
+  position: fixed;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
   width: 360px;
-  height: 100vh;
-  margin: 0 auto;
+  height: 780px;
+  max-width: 100%;
+  max-height: 100%;
   background-image: url('../../assets/images/volcano_BG.png');
   background-size: cover;
   background-position: center;
+  border-radius: 20px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.25);
   display: flex;
   flex-direction: column;
   overflow: hidden;
   font-family: 'Comic Sans MS', cursive, sans-serif;
-  position: relative;
+  z-index: 100;
 }
 
 .volcano-back-btn {
@@ -295,12 +302,42 @@
 }
 
 /* Mobile responsiveness */
-@media (max-width: 360px) {
+@media (max-width: 420px) {
   .volcano-container {
-    width: 100%;
+    position: relative;
+    left: 0;
+    top: 0;
+    transform: none;
+    width: 100vw;
+    height: 100vh;
+    border-radius: 0;
+    box-shadow: none;
   }
   
   .volcano-wrapper {
-    height: 550px;
+    height: calc(100vh - 100px);
   }
+}
+
+/* --- LOADING OVERLAY --- */
+.ai-loading-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 2000;
+}
+
+.ai-loading-content {
+  padding: 40px;
+  text-align: center;
+  color: #666;
+  background: white;
+  border-radius: 12px;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
 }
