@@ -25,9 +25,8 @@ import journalIcon from "../../assets/images/journal_icon.png";
 import flowerHouseIcon from "../../assets/images/flowerhouse_icon.png";
 
 /* ---------- Config / Points ---------- */
-const MOOD_POINTS = { happy: 50, calm: 40, anxious: 30, angry: 20, sad: 10 };
+const MOOD_POINTS = { happy: 80, calm: 60, anxious: 30, angry: 30, sad: 30 };
 const MAX_DAILY_GROWTH = 100;
-const MAX_JOURNAL_POINTS = 30;
 const MAX_WATERING_COUNT = 10;
 const MAX_FLOWERS_PER_WEEK = 7;
 
@@ -327,7 +326,7 @@ export default function MoodGarden() {
 
   async function submitJournal(text) {
     const words = countWords(text);
-    const journalPoints = Math.min(MAX_JOURNAL_POINTS, Math.floor(words / 20) * 5);
+    const journalPoints = Math.floor(words / 20) * 5;
     
     const currentWords = gardenRef.current.journalWordsToday || 0;
     const newWords = currentWords + words;
@@ -345,7 +344,11 @@ export default function MoodGarden() {
     }
   }
 
-  if (authLoading) return <div className="loading-container">Verifying identity...</div>;
+  if (authLoading) return (
+    <div className="mg-loading">
+      <div className="mg-loading-content">Verifying identity...</div>
+    </div>
+  );
   if (!currentUser) {
     return (
       <div className="moodgarden-wrap">
@@ -358,7 +361,11 @@ export default function MoodGarden() {
       </div>
     );
   }
-  if (loading) return <div className="loading-container">Loading Garden...</div>;
+  if (loading) return (
+    <div className="mg-loading">
+      <div className="mg-loading-content">Loading Garden...</div>
+    </div>
+  );
 
   const flowerPositions = [
     { left: "50%", bottom: "80%" }, { left: "40%", bottom: "85%" },

@@ -221,8 +221,8 @@ const AIVirtualFriend = () => {
 
   if (isLoadingHistory) {
     return (
-      <div className="ai-friend-container">
-        <div className="loading-screen">
+      <div className="ai-loading-overlay">
+        <div className="ai-loading-content">
           <p>Loading chat...</p>
         </div>
       </div>

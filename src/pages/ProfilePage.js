@@ -126,11 +126,8 @@ const ProfilePage = () => {
 
   if (isLoading) {
     return (
-      <div className="page-container profile-page">
-        <NavigationButtons />
-        <div className="page-content" style={{ display:'flex', justifyContent:'center', paddingTop:'100px' }}>
-          <p>Loading profile...</p>
-        </div>
+      <div className="profile-loading">
+        <div className="profile-loading-content">Loading profile...</div>
       </div>
     );
   }
