@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { IoChevronBackOutline, IoCloudUploadOutline, IoAddOutline, IoCloseOutline } from "react-icons/io5";
+import './EmergencyReport.css';
 
 import backgroundImageFile from '../../assets/images/EmergencyBackground.png'; 
 
@@ -93,13 +94,13 @@ const EmergencyReport = () => {
 
   return (
     <>
-    <div style={styles.pageWrapper}>
-      {/* Feedback Popup (Toast) */}
-      {showPopup && <div style={styles.popup}>{popupMessage}</div>}
+      <div className="main-page-container page-container" style={{backgroundImage: `url(${backgroundImageFile})`, backgroundSize: 'cover', backgroundPosition: 'center', backgroundRepeat: 'no-repeat'}}>
+        {/* Feedback Popup (Toast) */}
+        {showPopup && <div style={styles.popup}>{popupMessage}</div>}
 
-      <div style={styles.container}>
-        {/* Header */}
-        <div style={styles.header}>
+        <div style={styles.container}>
+          {/* Header */}
+          <div style={styles.header}>
           <IoChevronBackOutline style={styles.backIcon} onClick={handleBackClick} />
           <div style={styles.titleContainer}>
             <h2 style={styles.headerTitle}>Emergency & Safety Centre</h2>
@@ -205,39 +206,39 @@ const EmergencyReport = () => {
             </div>
           </div>
         </div>
-      </div>
-    </div>
-
-    {/* --- ADD MORE HOTLINE MODAL (Outside pageWrapper, fixed to viewport) --- */}
-    {showAddForm && (
-      <div style={styles.modalOverlay}>
-        <div style={styles.modalContent}>
-          <div style={styles.modalHeader}>
-            <h3 style={{margin: 0, fontSize: '18px', fontFamily: customFont, color: '#333'}}>Add New Hotline</h3>
-            <IoCloseOutline size={24} onClick={() => setShowAddForm(false)} style={{cursor: 'pointer', color: '#333'}} />
-          </div>
-          <input 
-            type="text" 
-            style={styles.modalInput} 
-            placeholder="Agency Name" 
-            value={newName} 
-            onChange={(e) => setNewName(e.target.value)} 
-            autoFocus 
-          />
-          <input 
-            type="text" 
-            style={styles.modalInput} 
-            placeholder="Phone Number" 
-            value={newNumber} 
-            onChange={(e) => setNewNumber(e.target.value)} 
-          />
-          <div style={{display: 'flex', gap: '10px', marginTop: '10px'}}>
-            <button style={{...styles.modalBtn, backgroundColor: '#eee', color: '#444'}} onClick={() => setShowAddForm(false)}>Cancel</button>
-            <button style={styles.modalBtn} onClick={handleAddHotline}>Save</button>
-          </div>
         </div>
       </div>
-    )}
+
+      {/* --- ADD MORE HOTLINE MODAL (Outside main page container, fixed to viewport) --- */}
+      {showAddForm && (
+        <div style={styles.modalOverlay}>
+          <div style={styles.modalContent}>
+            <div style={styles.modalHeader}>
+              <h3 style={{margin: 0, fontSize: '18px', fontFamily: customFont, color: '#333'}}>Add New Hotline</h3>
+              <IoCloseOutline size={24} onClick={() => setShowAddForm(false)} style={{cursor: 'pointer', color: '#333'}} />
+            </div>
+            <input 
+              type="text" 
+              style={styles.modalInput} 
+              placeholder="Agency Name" 
+              value={newName} 
+              onChange={(e) => setNewName(e.target.value)} 
+              autoFocus 
+            />
+            <input 
+              type="text" 
+              style={styles.modalInput} 
+              placeholder="Phone Number" 
+              value={newNumber} 
+              onChange={(e) => setNewNumber(e.target.value)} 
+            />
+            <div style={{display: 'flex', gap: '10px', marginTop: '10px'}}>
+              <button style={{...styles.modalBtn, backgroundColor: '#eee', color: '#444'}} onClick={() => setShowAddForm(false)}>Cancel</button>
+              <button style={styles.modalBtn} onClick={handleAddHotline}>Save</button>
+            </div>
+          </div>
+        </div>
+      )}
     </>
   );
 };
@@ -245,33 +246,7 @@ const EmergencyReport = () => {
 const customFont = "'Comic Sans MS', 'Chalkboard SE', sans-serif";
 
 const styles = {
-  pageWrapper: { 
-    position: 'fixed',
-    left: '50%',
-    top: '50%',
-    transform: 'translate(-50%, -50%)',
-    width: '360px',
-    maxWidth: '100%',
-    height: '780px',
-    maxHeight: '100%',
-    borderRadius: '20px',
-    boxShadow: '0 10px 30px rgba(0,0,0,0.25)',
-    backgroundImage: `url(${backgroundImageFile})`, 
-    backgroundSize: 'cover', 
-    backgroundPosition: 'center', 
-    backgroundRepeat: 'no-repeat', 
-    display: 'flex', 
-    flexDirection: 'column', 
-    justifyContent: 'flex-start',
-    alignItems: 'center', 
-    padding: '20px', 
-    paddingTop: '20px',
-    fontFamily: customFont,
-    boxSizing: 'border-box',
-    overflowY: 'auto',
-    position: 'relative'
-  },
-  container: { width: '100%', maxWidth: '420px' },
+  container: { width: '100%', maxWidth: '320px', paddingRight: '20px', marginRight: 'auto', marginLeft: 'auto', overflowY: 'auto', maxHeight: 'calc(780px - 40px)', boxSizing: 'border-box', paddingBottom: '20px' },
   header: { display: 'flex', alignItems: 'center', marginBottom: '25px' },
   backIcon: { fontSize: '24px', color: '#4e342e', cursor: 'pointer' },
   titleContainer: { marginLeft: '10px' },
@@ -291,6 +266,7 @@ const styles = {
   dividerLong: { width: '85%', height: '2px', backgroundColor: '#eee', margin: '4px auto 10px auto', borderRadius: '2px' },
   
   hotlineGrid: { display: 'flex', flexDirection: 'column', gap: '10px' },
+  hotlineRow: {},
   hotlineBox: { flex: 1, backgroundColor: 'white', padding: '12px', borderRadius: '12px', fontSize: '13px', border: '1px solid rgba(0,0,0,0.05)', fontFamily: customFont, display: 'flex', justifyContent: 'space-between' },
   hotlineNumber: { color: '#d32f2f', fontWeight: '900', marginLeft: '10px', fontFamily: customFont },
   
