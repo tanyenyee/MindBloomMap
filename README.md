@@ -2,6 +2,8 @@
 
 > **A gamified mental wellness and anti-bullying web application designed to help youth and students build emotional resilience.**
 
+🌐 **[Click here to view the Live Website](https://your-deployed-link-goes-here.com)**
+
 MindBloomMap is a non-clinical mental wellness platform designed to assist users in managing their emotional health through three core pillars: **tracking, reflection, and community safety**. Built with a focus on SDG Goal 3 (Good Health and Well-Being), it provides an engaging, nature-inspired environment where users can visualize their emotional trends, access self-care tools, and find a safe, moderated peer-support community.
 
 ---
