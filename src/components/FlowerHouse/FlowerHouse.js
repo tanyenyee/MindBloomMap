@@ -22,26 +22,17 @@ const groupLogsByMonthBlock = (logs, viewYear, viewMonthIndex) => {
     const weeksMap = new Map();
     const safeLogs = Array.isArray(logs) ? logs : [];
 
-    // --- CRITICAL FIX IS HERE ---
-    // We check if it is a string first. If yes, return it immediately.
-    // We DO NOT let new Date() touch it.
     const getLocalDateKey = (dateInput) => {
         if (!dateInput) return "";
-        
-        // 1. If it's already a simple string "YYYY-MM-DD", use it directly!
         if (typeof dateInput === 'string' && dateInput.match(/^\d{4}-\d{2}-\d{2}$/)) {
             return dateInput;
         }
-
-        // 2. If it is a Date Object (from the loop logic), extract Local YYYY-MM-DD
         if (dateInput instanceof Date) {
              const year = dateInput.getFullYear();
              const month = String(dateInput.getMonth() + 1).padStart(2, '0');
              const day = String(dateInput.getDate()).padStart(2, '0');
              return `${year}-${month}-${day}`;
         }
-
-        // 3. Fallback for timestamps (rarely used now but safe to keep)
         const d = new Date(dateInput);
         const year = d.getFullYear();
         const month = String(d.getMonth() + 1).padStart(2, '0');
@@ -49,56 +40,60 @@ const groupLogsByMonthBlock = (logs, viewYear, viewMonthIndex) => {
         return `${year}-${month}-${day}`;
     };
 
-    // Start exactly at the beginning of the month (Local Time)
-    let currentBlockStart = new Date(viewYear, viewMonthIndex, 1);
+    // 1. Get the 1st day of the selected month
+    const firstOfMonth = new Date(viewYear, viewMonthIndex, 1);
+    
+    // 2. Find the Monday of that week
+    const dayOfWeek = firstOfMonth.getDay();
+    const diffToMonday = (dayOfWeek === 0 ? -6 : 1) - dayOfWeek;
+    
+    let currentBlockStart = new Date(firstOfMonth);
+    currentBlockStart.setDate(firstOfMonth.getDate() + diffToMonday);
     currentBlockStart.setHours(0, 0, 0, 0);
 
-    let weekCounter = 1;
-    // Go until the end of the month
+    // 3. Determine end of month
     const endOfMonth = new Date(viewYear, viewMonthIndex + 1, 0);
-    endOfMonth.setHours(23, 59, 59, 999);
+    
+    // Loop for 6 weeks
+    for (let i = 0; i < 6; i++) {
+        if (currentBlockStart > endOfMonth) break;
 
-    // Loop through 6 potential weeks
-    while (currentBlockStart <= endOfMonth && weekCounter <= 6) {
         const blockEnd = new Date(currentBlockStart);
         blockEnd.setDate(currentBlockStart.getDate() + 6); 
+        blockEnd.setHours(23, 59, 59, 999);
 
-        // Cap the week end if it goes into the next month
-        const effectiveBlockEnd = blockEnd > endOfMonth ? endOfMonth : blockEnd;
-        
-        // Key for map (YYYY-MM-DD)
         const weekKey = getLocalDateKey(currentBlockStart);
 
-        const options = { year: 'numeric', month: 'numeric', day: 'numeric' };
-        const formattedStartDate = currentBlockStart.toLocaleDateString('en-GB', options);
-        const formattedEndDate = effectiveBlockEnd.toLocaleDateString('en-GB', options);
+        // --- FIXED FORMATTING HERE ---
+        // Option 1: Full Date (DD/MM/YYYY) - Needed for Logic
+        const fullOptions = { year: 'numeric', month: 'numeric', day: 'numeric' };
+        const fullStartDate = currentBlockStart.toLocaleDateString('en-GB', fullOptions); // "05/01/2026"
+        const fullEndDate = blockEnd.toLocaleDateString('en-GB', fullOptions);     // "11/01/2026"
+
+        // Option 2: Short Date (DD/MM) - Needed for Display Label
+        const shortOptions = { month: 'numeric', day: 'numeric' };
+        const shortStartDate = currentBlockStart.toLocaleDateString('en-GB', shortOptions); // "05/01"
+        const shortEndDate = blockEnd.toLocaleDateString('en-GB', shortOptions);     // "11/01"
 
         const blockData = {
-            startDate: formattedStartDate, 
-            endDate: formattedEndDate,   
+            startDate: fullStartDate, // Pass WITH YEAR so the Modal can calculate dates
+            endDate: fullEndDate,   
             logs: [], 
-            weekLabel: `Week ${weekCounter}`,
+            weekLabel: `${shortStartDate} - ${shortEndDate}`, // Keep label SHORT and pretty
         };
 
-        // Iterate through every day in this week block
-        // We use a new Date object (d) so we don't mess up currentBlockStart
-        for (let d = new Date(currentBlockStart); d <= effectiveBlockEnd; d.setDate(d.getDate() + 1)) {
+        for (let d = new Date(currentBlockStart); d <= blockEnd; d.setDate(d.getDate() + 1)) {
             const dateKey = getLocalDateKey(d);
-            
-            // COMPARE: We filter safeLogs looking for a strict string match
             const daysLogs = safeLogs.filter(log => getLocalDateKey(log.date) === dateKey);
-            
             if (daysLogs.length > 0) {
                 blockData.logs.push(...daysLogs);
             }
         }
 
         weeksMap.set(weekKey, blockData);
-        
-        // Move to next week
         currentBlockStart.setDate(currentBlockStart.getDate() + 7);
-        weekCounter++;
     }
+
     return Array.from(weeksMap.values());
 };
 
